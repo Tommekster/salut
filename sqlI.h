@@ -18,8 +18,8 @@ public:
     virtual void connect() = 0;
     //virtual void query() = 0;
     virtual QAbstractItemModel *getContractsModel(bool) = 0;
-    virtual QAbstractItemModel *getResidentsModel(int) = 0;
     virtual QMap<int, QString> getPersonsName() = 0;
+    virtual QMap<int, QString> getResidentsName(int) = 0;
     virtual void disconnect() = 0;
 
     bool isConnected() {return connected;}

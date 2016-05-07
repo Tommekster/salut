@@ -61,7 +61,7 @@ QAbstractItemModel *sqlTest::getContractsModel(bool active)
     model->setQuery("select Contracts.rowid, Contracts.Code, Persons.Name || ' ' || Persons.Surname, "
                     "strftime('%d.%m.%Y',Contracts.Validf), strftime('%d.%m.%Y',Contracts.Validt) "
                     "from Contracts inner join Persons on Contracts.Owner == Persons.rowid"+Where,
-                    QSqlDatabase::database("in_mem_db"));
+                    db);
     //model->select();
 
     // Zahlavi
@@ -79,29 +79,16 @@ QAbstractItemModel *sqlTest::getContractsModel(bool active)
     return model;
 }
 
-QAbstractItemModel *sqlTest::getResidentsModel(int contract_id)
+QMap<int, QString> sqlTest::getResidentsName(int contr_id)
 {
-    QSqlQueryModel *model = new QSqlQueryModel(this);
-
-    model->setQuery("select Contracts.rowid, Contracts.Code, Persons.Name || ' ' || Persons.Surname, "
-                    "strftime('%d.%m.%Y',Contracts.Validf), strftime('%d.%m.%Y',Contracts.Validt) "
-                    "from Contracts inner join Persons on Contracts.Owner == Persons.rowid",
-                    QSqlDatabase::database("in_mem_db"));
-    //model->select();
-
-    // Zahlavi
-    // 0 ... header rowid ... will be hidden
-    model->setHeaderData(1,Qt::Horizontal,tr("Contract"));
-    model->setHeaderData(2,Qt::Horizontal,tr("Tenant"));
-    model->setHeaderData(3,Qt::Horizontal,tr("From"));
-    model->setHeaderData(4,Qt::Horizontal,tr("To"));
-
-    if(model->lastError().type() != QSqlError::NoError){
-        qDebug() << "Mam chybu v modelu. " << model->lastError().text();
-        return NULL; // TODO
+    QSqlQuery q(db);
+    QMap<int,QString> m;
+    q.exec("select rowid, Name || ' ' || Surname from Persons");
+    while(q.next()){
+        m.insert(q.value(0).toInt(),q.value(1).toString());
     }
-
-    return model;
+    qDebug() << q.lastError().text() << endl;
+    return m;
 }
 
 QMap<int, QString> sqlTest::getPersonsName()

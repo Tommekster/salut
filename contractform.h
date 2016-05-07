@@ -9,7 +9,7 @@ class QDateEdit;
 class QPushButton;
 class QCheckBox;
 class QComboBox;
-class myListWidget;
+class QListWidget;
 class QTableView;
 class QToolButton;
 class sqlI;
@@ -28,21 +28,17 @@ class contractForm : public QDialog
     QCheckBox *chkIsValid;
     QLabel *lblMainOwner;
     QComboBox *cmbMainOwner;
-    //QLabel *lblTendants;
-    //myListWidget *lstTendants;
     QLabel *lblResidents;
-    QTableView *tblResidents;
+    QListWidget *lstResidents;
     QComboBox *cmbAddResident;
     QToolButton *tbnAddResident;
     QToolButton *tbnOutResident;
-    QToolButton *tbnResidentTendant;
 
     QPushButton *btnSubmit;
     QPushButton *btnCancel;
 
     void createForm();
-    void createNewOwner();
-    void createNewResident();
+    void createNewPerson();
     void fillPersons();
     void fillResidents();
     bool addingNew;
@@ -52,7 +48,8 @@ class contractForm : public QDialog
 protected slots:
     void on_cmbMainOwner_activated(int);
     void on_cmbAddResident_activated(int);
-    //void on_tbnAddResident_pressed();
+    void on_tbnAddResident_clicked();
+    void on_tbnOutResident_clicked();
 
 public:
     explicit contractForm(sqlI *_db,QWidget *parent = 0);

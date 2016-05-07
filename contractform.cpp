@@ -22,25 +22,6 @@
 #include "personform.h"
 #include "sqlI.h"
 
-class myListWidget : public QListWidget{
-public:
-    explicit myListWidget(QWidget *parent = 0) : QListWidget(parent) {}
-protected:
-    void dragEnterEvent(QDragEnterEvent * event){
-        const QMimeData * mime = event->mimeData();
-        if(mime->hasText() /*&& mime->hasFormat("application/x-person")*/)
-            event->setAccepted(true);
-    }
-
-    void dropEvent(QDropEvent * event){
-        qDebug() << "Drop";
-        const QMimeData *mime = event->mimeData();
-        if(mime->hasText() /*&& mime->hasFormat("application/x-person")*/){
-            this->addItem(mime->text());
-        }
-    }
-};
-
 contractForm::contractForm(sqlI *_db,contract *c, QWidget *parent)
     : QDialog(parent),addingNew(false),db(_db),_contract(c)
 {
@@ -71,26 +52,16 @@ void contractForm::createForm()
     chkIsValid->setChecked(true);
     lblMainOwner = new QLabel(tr("Tendant"),this);
     cmbMainOwner = new QComboBox(this);
-    /*lblTendants = new QLabel(tr("Tendants"),this);
-    lstTendants = new myListWidget(this);
-    lstTendants->setAcceptDrops(true);
-    lstResidents = new myListWidget(this);
-    lstResidents->setAcceptDrops(true);*/
     lblResidents = new QLabel(tr("Residents"),this);
-    tblResidents = new QTableView(this);
-    //tblResidents->setMinimumHeight(100);
+    lstResidents = new QListWidget;
     cmbAddResident = new QComboBox(this);
     tbnAddResident = new QToolButton(this);
     tbnAddResident->setText("+");
     tbnOutResident = new QToolButton(this);
     tbnOutResident->setText("–");
-    tbnResidentTendant = new QToolButton(this);
-    tbnResidentTendant->setText("RT");
 
     btnSubmit = new QPushButton(tr("Cre&ate"),this);
     btnCancel = new QPushButton(tr("&Cancel"),this);
-
-    //btnNewResident = new QPushButton(tr("Create a new person"),this);
 
     QHBoxLayout *lButtons = new QHBoxLayout;
     lButtons->addStretch();
@@ -105,12 +76,11 @@ void contractForm::createForm()
     lForm->addRow("",chkIsValid);
     lForm->addRow(lblMainOwner,cmbMainOwner);
     lForm->addRow(lblResidents);
-    lForm->addRow(tblResidents);
+    lForm->addRow(lstResidents);
     QHBoxLayout *lEdtResidents = new QHBoxLayout;
     lEdtResidents->addWidget(cmbAddResident);
     lEdtResidents->addWidget(tbnAddResident);
     lEdtResidents->addWidget(tbnOutResident);
-    lEdtResidents->addWidget(tbnResidentTendant);
     lForm->addRow(lEdtResidents);
 
     QVBoxLayout *lMain = new QVBoxLayout;
@@ -124,17 +94,13 @@ void contractForm::createForm()
 
     // Signals & slots
     connect(cmbMainOwner,SIGNAL(activated(int)),this,SLOT(on_cmbMainOwner_activated(int)));
-    //connect(tbnAddResident,SIGNAL(pressed()),this,SLOT(on_tbnAddResident_pressed()));
+    connect(cmbAddResident,SIGNAL(activated(int)),this,SLOT(on_cmbAddResident_activated(int)));
+    connect(tbnAddResident,SIGNAL(clicked(bool)),this,SLOT(on_tbnAddResident_clicked()));
+    connect(tbnOutResident,SIGNAL(clicked(bool)),this,SLOT(on_tbnOutResident_clicked()));
     connect(btnCancel,SIGNAL(clicked(bool)),this,SLOT(reject()));
 }
 
-void contractForm::createNewOwner()
-{
-    personForm form(this);
-    form.exec();
-}
-
-void contractForm::createNewResident()
+void contractForm::createNewPerson()
 {
     personForm form(this);
     form.exec();
@@ -156,32 +122,51 @@ void contractForm::fillPersons()
     }
     cmbMainOwner->insertSeparator(cmbMainOwner->count());
     cmbMainOwner->addItem(tr("Create a new person"));
+
+    cmbAddResident->insertSeparator(cmbAddResident->count());
+    cmbAddResident->addItem(tr("Create a new person"));
+}
+
+void contractForm::fillResidents()
+{
+    if(addingNew) return;
+
+    //QMapIterator<int,QString> person(_contract->getResidentsName());
 }
 
 void contractForm::on_cmbMainOwner_activated(int index)
 {
     //qDebug() << "onCmbMainOwnerActivated" << index << ","<<cmbMainOwner->count();
     if((index+1) == cmbMainOwner->count() && !QString::compare(cmbMainOwner->itemText(index),tr("Create a new person"))){
-        createNewOwner();
+        createNewPerson();
     }
 }
 
 void contractForm::on_cmbAddResident_activated(int index)
 {
     if((index+1) == cmbAddResident->count() && !QString::compare(cmbAddResident->itemText(index),tr("Create a new person"))){
-        createNewResident();
-    //}else{
-
+        createNewPerson();
     }
 }
 
-/*void contractForm::on_tbnAddResident_pressed(){
-    QDrag *drag = new QDrag(this);
-    QMimeData *mime = new QMimeData;
-    mime->setText(cmbAddResident->currentText());
-    //mime->setProperty("rowid",cmbAddResident->currentData());
-    mime->setImageData(cmbAddResident->currentData());
-    mime->setData("application/x-person",QByteArray());
-    drag->setMimeData(mime);
-    drag->exec(Qt::CopyAction | Qt::MoveAction | Qt::LinkAction);
-}*/
+void contractForm::on_tbnAddResident_clicked()
+{
+    // Polozka Create a new person
+    if((cmbAddResident->currentIndex()+1) == cmbAddResident->count() && !QString::compare(cmbAddResident->currentText(),tr("Create a new person")))
+        return;
+
+    // kontrolu na "duplikaty"
+    QList<QListWidgetItem *> l = lstResidents->findItems(cmbAddResident->currentText(),Qt::MatchCaseSensitive);
+    if(!l.empty()) return;
+
+    QListWidgetItem *itm = new QListWidgetItem(cmbAddResident->currentText());
+    itm->setData(Qt::UserRole,cmbAddResident->currentData());
+    lstResidents->addItem(itm);
+}
+
+void contractForm::on_tbnOutResident_clicked()
+{
+    if(lstResidents->count() == 0) return;
+
+    lstResidents->takeItem(lstResidents->currentRow());
+}

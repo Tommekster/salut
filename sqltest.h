@@ -21,6 +21,7 @@ public:
     //void query();
     QAbstractItemModel *getContractsModel(bool active);
     QMap<int, QString> getPersonsName();
+    QMap<int, QString> getResidentsName(int);
     void disconnect();
 };
 
