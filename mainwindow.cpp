@@ -7,7 +7,6 @@
 #include <QDebug>
 #include <QSettings>
 #include <QFileDialog>
-#include <QSqlTableModel>
 #include "sqlI.h"
 #include "sqltest.h"
 #include "mainwindow.h"
@@ -57,7 +56,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     loadContracts();
 
-    //connect(ui->pushButton_3,SIGNAL(clicked(bool)),this,SLOT(loadContracts()));
+    connect(ui->pushButton_3,SIGNAL(clicked(bool)),this,SLOT(testFn()));
     connect(ui->checkBox,SIGNAL(stateChanged(int)),this,SLOT(loadContracts()));
 }
 
@@ -87,40 +86,28 @@ void MainWindow::loadContracts()
         qDebug() << "Koncim, protoze DB neni otevrena.\n";
         return;
     }
-    QSqlQueryModel *model = new QSqlQueryModel(this);
-    //QSqlTableModel *model = new QSqlTableModel(this,QSqlDatabase::database("in_mem_db"));
-    QString Where("");
-    if(ui->checkBox->isChecked()){ // pouze aktualni
-        Where = " where Contracts.Active = 1";
-    }
-    model->setQuery("select Contracts.rowid, Contracts.Code, Persons.Name || ' ' || Persons.Surname, "
-                    "strftime('%d.%m.%Y',Contracts.Validf), strftime('%d.%m.%Y',Contracts.Validt) "
-                    "from Contracts inner join Persons on Contracts.Owner == Persons.rowid"+Where,
-                    QSqlDatabase::database("in_mem_db"));
-    //model->select();
 
-    // Zahlavi
-    // 0 ... header rowid ... will be hidden
-    model->setHeaderData(1,Qt::Horizontal,tr("Contract"));
-    model->setHeaderData(2,Qt::Horizontal,tr("Tenant"));
-    model->setHeaderData(3,Qt::Horizontal,tr("From"));
-    model->setHeaderData(4,Qt::Horizontal,tr("To"));
-
-    if(model->lastError().type() != QSqlError::NoError){
-        qDebug() << "Mam chybu v modelu. " << model->lastError().text();
-        return; // TODO
-    }
-    ui->tableView->setModel(model);
+    ui->tableView->setModel(db->getContractsModel(ui->checkBox->isChecked()));
     ui->tableView->setColumnHidden(0,true);
     ui->tableView->setColumnWidth(2,150);
     ui->tableView->setEditTriggers(QAbstractItemView::NoEditTriggers);
 
+    // TODO connect signals & slots ...
+}
 
-    // TODO connect ...
+void MainWindow::testFn()
+{
+    qDebug() << "delam testFn" << endl;
+    QMapIterator<int,QString> i(db->getPersonsName());
+        while (i.hasNext()) {
+            i.next();
+            qDebug() << i.key() << ": "
+                 << i.value() << endl;
+        }
 }
 
 void MainWindow::on_pushButton_clicked()
 {
-    contractForm form(this);
+    contractForm form(db,this);
     form.exec();
 }

@@ -9,7 +9,10 @@ class QDateEdit;
 class QPushButton;
 class QCheckBox;
 class QComboBox;
-class QListWidget;
+class myListWidget;
+class QTableView;
+class QToolButton;
+class sqlI;
 class contract;
 
 class contractForm : public QDialog
@@ -25,33 +28,40 @@ class contractForm : public QDialog
     QCheckBox *chkIsValid;
     QLabel *lblMainOwner;
     QComboBox *cmbMainOwner;
+    //QLabel *lblTendants;
+    //myListWidget *lstTendants;
     QLabel *lblResidents;
-    QListWidget *lstResidents;
+    QTableView *tblResidents;
+    QComboBox *cmbAddResident;
+    QToolButton *tbnAddResident;
+    QToolButton *tbnOutResident;
+    QToolButton *tbnResidentTendant;
 
     QPushButton *btnSubmit;
     QPushButton *btnCancel;
 
-    //QPushButton *btnNewResident;
-    //QComboBox *cmbCpyHabitants;
-    QComboBox *cmbAddResident;
-
     void createForm();
     void createNewOwner();
     void createNewResident();
+    void fillPersons();
+    void fillResidents();
     bool addingNew;
+    sqlI *db;
     contract *_contract;
 
-private slots:
+protected slots:
     void on_cmbMainOwner_activated(int);
     void on_cmbAddResident_activated(int);
+    //void on_tbnAddResident_pressed();
 
 public:
-    explicit contractForm(QWidget *parent = 0);
-    explicit contractForm(contract *c, QWidget *parent = 0);
+    explicit contractForm(sqlI *_db,QWidget *parent = 0);
+    explicit contractForm(sqlI *_db,contract *c, QWidget *parent = 0);
 
 signals:
 
 public slots:
+protected slots:
 };
 
 #endif // CONTRACTFORM_H

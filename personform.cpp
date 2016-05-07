@@ -1,5 +1,6 @@
 #include "personform.h"
 
+#include <QFormLayout>
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QLineEdit>
@@ -29,19 +30,16 @@ void personForm::createForm()
     lButtons->addWidget(btnSubmit);
     lButtons->addWidget(btnCancel);
 
+    QFormLayout *lForm = new QFormLayout;
+    lForm->addRow(lblName,edtName);
+    lForm->addRow(lblSurname,edtSurname);
+    lForm->addRow(lblAddress,edtAddress);
+    lForm->addRow(lblEmail,edtEmail);
+    lForm->addRow(lblPhone,edtPhone);
+    lForm->addRow(lblBank,edtBank);
+
     QVBoxLayout *lMain = new QVBoxLayout;
-    lMain->addWidget(lblName);
-    lMain->addWidget(edtName);
-    lMain->addWidget(lblSurname);
-    lMain->addWidget(edtSurname);
-    lMain->addWidget(lblAddress);
-    lMain->addWidget(edtAddress);
-    lMain->addWidget(lblEmail);
-    lMain->addWidget(edtEmail);
-    lMain->addWidget(lblPhone);
-    lMain->addWidget(edtPhone);
-    lMain->addWidget(lblBank);
-    lMain->addWidget(edtBank);
+    lMain->addLayout(lForm);
     lMain->addStretch();
     lMain->addLayout(lButtons);
 
