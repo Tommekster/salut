@@ -5,7 +5,7 @@
 #include <QDate>
 #include <QList>
 
-class person;
+class Person;
 
 class contract
 {
@@ -15,7 +15,7 @@ class contract
     QDate vTo;
     bool valid;
     int ownerId;
-    person *owner;
+    Person *owner;
 
 public:
     contract();
@@ -26,9 +26,9 @@ public:
     QDate getFrom()const{return vFrom;}
     QDate getTo()const{return vTo;}
     bool isValid()const{return valid;}
-    person *getOwner()const;
+    Person *getOwner()const;
     int getOwnerId()const{return ownerId;}
-    QList<person> getOwners();
+    QList<Person> getOwners();
 };
 
 #endif // CONTRACT_H

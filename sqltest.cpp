@@ -6,6 +6,7 @@
 #include <QDebug>
 #include <QSqlQueryModel>
 
+#include "person.h"
 
 void sqlTest::connect()
 {
@@ -89,6 +90,19 @@ QMap<int, QString> sqlTest::getResidentsName(int contr_id)
     }
     qDebug() << q.lastError().text() << endl;
     return m;
+}
+
+int sqlTest::insertIntoPersons(Person *p)
+{
+    QSqlQuery q(db);
+    q.exec("insert into Persons (Name,Surname,Address,Email,Phone,Bank) values "
+           "('"+p->getName()+"', '"+p->getSurname()+"', '"+p->getAddress()+"', '"
+           +p->getEmail()+"', '"+p->getPhone()+"', '"+p->getBank()+"')");
+    if(q.numRowsAffected() <1){
+        qDebug() << "insertInsertIntoPersons selhalo!";
+        return -1;
+    }else
+        return q.lastInsertId().toInt();
 }
 
 QMap<int, QString> sqlTest::getPersonsName()

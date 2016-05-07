@@ -7,7 +7,8 @@ class QLabel;
 class QLineEdit;
 class QTextEdit;
 class QPushButton;
-class person;
+class Person;
+class sqlI;
 
 class personForm : public QDialog
 {
@@ -31,12 +32,21 @@ class personForm : public QDialog
 
     void createForm();
     bool addingNew;
+    Person *_person;
+    bool ownPerson;
+    sqlI *db;
 
 public:
-    explicit personForm(person *p,QDialog *parent = 0);
-    explicit personForm(QDialog *parent = 0);
+    explicit personForm(sqlI *_db, Person *p,QDialog *parent = 0);
+    explicit personForm(sqlI *_db, QDialog *parent = 0);
+    ~personForm();
+
+    Person *getPerson(){ownPerson=false;return _person;}
 
 signals:
+
+protected slots:
+    void on_submit();
 
 public slots:
 };

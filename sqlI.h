@@ -5,6 +5,7 @@
 #include <QObject>
 
 class QAbstractItemModel;
+class Person;
 
 class sqlI : public QObject
 {
@@ -20,6 +21,7 @@ public:
     virtual QAbstractItemModel *getContractsModel(bool) = 0;
     virtual QMap<int, QString> getPersonsName() = 0;
     virtual QMap<int, QString> getResidentsName(int) = 0;
+    virtual int insertIntoPersons(Person *) = 0;
     virtual void disconnect() = 0;
 
     bool isConnected() {return connected;}

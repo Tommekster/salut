@@ -102,12 +102,17 @@ void contractForm::createForm()
 
 void contractForm::createNewPerson()
 {
-    personForm form(this);
-    form.exec();
+    personForm form(db,this);
+    int res=form.exec();
+    if(res==form.Accepted){
+        fillPersons();
+    }
 }
 
 void contractForm::fillPersons()
 {
+    if(cmbMainOwner->count()>0) cmbMainOwner->clear();
+    if(cmbAddResident->count()>0) cmbAddResident->clear();
     // Fill Owner ComboBox
     int ownId=0;
     //if(!addingNew) ownId = _contract->getOwnerId();

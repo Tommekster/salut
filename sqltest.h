@@ -22,6 +22,7 @@ public:
     QAbstractItemModel *getContractsModel(bool active);
     QMap<int, QString> getPersonsName();
     QMap<int, QString> getResidentsName(int);
+    int insertIntoPersons(Person *);
     void disconnect();
 };
 

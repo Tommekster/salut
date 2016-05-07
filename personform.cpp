@@ -6,6 +6,7 @@
 #include <QLineEdit>
 #include <QPushButton>
 #include <QTextEdit>
+#include "person.h"
 
 void personForm::createForm()
 {
@@ -46,19 +47,42 @@ void personForm::createForm()
     setLayout(lMain);
 
     // Signals & slots
+    connect(btnSubmit,SIGNAL(clicked(bool)),this,SLOT(on_submit()));
     connect(btnCancel,SIGNAL(clicked(bool)),this,SLOT(reject()));
 }
 
-personForm::personForm(person *p, QDialog *parent)
-    : QDialog(parent), addingNew(false)
+personForm::personForm(sqlI *_db, Person *p, QDialog *parent)
+    : QDialog(parent), addingNew(false), db(_db), _person(p), ownPerson(false)
 {
     createForm();
     setWindowTitle(tr("Edit person"));
+    btnSubmit->setText(tr("&Save"));
 }
 
-personForm::personForm(QDialog *parent)
-    : QDialog(parent), addingNew(true)
+personForm::personForm(sqlI *_db, QDialog *parent)
+    : QDialog(parent), addingNew(true), db(_db)
 {
     createForm();
     setWindowTitle(tr("Create person"));
+}
+
+personForm::~personForm()
+{
+    if(ownPerson) delete _person;
+}
+
+void personForm::on_submit()
+{
+    if(addingNew){
+        _person = Person::createPerson(
+                    db,
+                    edtName->text(),
+                    edtSurname->text(),
+                    edtAddress->toPlainText(),
+                    edtEmail->text(),
+                    edtPhone->text(),
+                    edtBank->text());
+        ownPerson=true;
+        accept();
+    }
 }
