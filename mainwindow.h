@@ -24,11 +24,18 @@ public:
     ~MainWindow();
 
 private slots:
-    void on_pushButton_2_clicked();
     void loadContracts();
+    void loadPersons();
     void testFn();
 
-    void on_pushButton_clicked();
+    void on_tableView_doubleClicked(const QModelIndex &index);
+    void on_tabWidget_currentChanged(int index);
+
+    void on_btnAddContract_clicked();
+
+    void on_btnAddPerson_clicked();
+
+    void on_tableView_2_doubleClicked(const QModelIndex &index);
 
 private:
     Ui::MainWindow *ui;

@@ -51,16 +51,27 @@ void personForm::createForm()
     connect(btnCancel,SIGNAL(clicked(bool)),this,SLOT(reject()));
 }
 
-personForm::personForm(sqlI *_db, Person *p, QDialog *parent)
-    : QDialog(parent), addingNew(false), db(_db), _person(p), ownPerson(false)
+void personForm::fillForm()
+{
+    edtName->setText(_person->getName());
+    edtSurname->setText(_person->getSurname());
+    edtAddress->setText(_person->getAddress());
+    edtEmail->setText(_person->getEmail());
+    edtPhone->setText(_person->getPhone());
+    edtBank->setText(_person->getBank());
+}
+
+personForm::personForm(sqlI *_db, Person *p, QWidget *parent)
+    : QDialog(parent), addingNew(false), ownPerson(true), db(_db), _person(p)
 {
     createForm();
+    fillForm();
     setWindowTitle(tr("Edit person"));
     btnSubmit->setText(tr("&Save"));
 }
 
-personForm::personForm(sqlI *_db, QDialog *parent)
-    : QDialog(parent), addingNew(true), db(_db)
+personForm::personForm(sqlI *_db, QWidget *parent)
+    : QDialog(parent), addingNew(true), ownPerson(false), db(_db)
 {
     createForm();
     setWindowTitle(tr("Create person"));

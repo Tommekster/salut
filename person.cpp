@@ -1,6 +1,6 @@
 #include "person.h"
 #include "sqlI.h"
-#include "QDebug"
+#include <QDebug>
 
 void Person::save()
 {
@@ -16,8 +16,12 @@ void Person::save()
 
 Person::Person(sqlI *_db)
     : db(_db),isNew(true)
+{}
+
+Person::Person(sqlI *_db, int id)
+    :db(_db),isNew(false),rowid(id)
 {
-    
+    db->selectFromPersons(this);
 }
 
 Person *Person::createPerson(sqlI *db,

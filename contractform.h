@@ -13,7 +13,7 @@ class QListWidget;
 class QTableView;
 class QToolButton;
 class sqlI;
-class contract;
+class Contract;
 
 class contractForm : public QDialog
 {
@@ -38,22 +38,26 @@ class contractForm : public QDialog
     QPushButton *btnCancel;
 
     void createForm();
+    void fillForm();
     void createNewPerson();
     void fillPersons();
     void fillResidents();
     bool addingNew;
     sqlI *db;
-    contract *_contract;
+    Contract *_contract;
+    bool ownContract;
 
 protected slots:
     void on_cmbMainOwner_activated(int);
     void on_cmbAddResident_activated(int);
     void on_tbnAddResident_clicked();
     void on_tbnOutResident_clicked();
+    void on_submit();
 
 public:
     explicit contractForm(sqlI *_db,QWidget *parent = 0);
-    explicit contractForm(sqlI *_db,contract *c, QWidget *parent = 0);
+    explicit contractForm(sqlI *_db,Contract *c, QWidget *parent = 0);
+    ~contractForm();
 
 signals:
 

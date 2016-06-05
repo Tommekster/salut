@@ -4,7 +4,7 @@
 #include <QString>
 #include <QList>
 
-class contract;
+class Contract;
 class sqlI;
 
 class Person
@@ -19,7 +19,7 @@ class Person
     QString bank;
 
     bool generic; // Proc to tu je?
-    contract *current;
+    Contract *current;
     bool tenant;
 
     bool isNew; // jestli uz je v databazi
@@ -29,6 +29,7 @@ class Person
 
 public:
     Person(sqlI *_db);
+    Person(sqlI *_db,int);
 
     static Person *createPerson(
             sqlI *db,
@@ -46,14 +47,19 @@ public:
     QString getEmail()const{return email;}
     QString getPhone()const{return phone;}
     QString getBank()const{return bank;}
-    int getRowid()const{return rowid;}
+    int getRowId()const{return rowid;}
 
     // settry
-    //void setName()
+    void setName(QString s){name=s;}
+    void setSurname(QString s){surname=s;}
+    void setAddress(QString s){address=s;}
+    void setEmail(QString s){email=s;}
+    void setPhone(QString s){phone=s;}
+    void setBank(QString s){bank=s;}
 
-    QList<contract> getAllContracts()const;
+    QList<Contract> getAllContracts()const;
     bool isGeneric()const{return generic;}
-    contract *getCurrContract()const;
+    Contract *getCurrContract()const;
     bool isTenant()const{if(!generic) return tenant; else return false;}
 };
 

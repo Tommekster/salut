@@ -12,6 +12,9 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "contractform.h"
+#include "contract.h"
+#include "personform.h"
+#include "person.h"
 
 void MainWindow::loadConfiguration()
 {
@@ -25,16 +28,16 @@ void MainWindow::loadConfiguration()
 
     // Database
     QString dbType = s.value("database/type","sqlTest").toString();
-    qDebug()<<dbType<<endl;
+    qDebug()<<"Typ databaze:"<<dbType;
     if(QString::compare(dbType,"sqlite", Qt::CaseInsensitive) == 0){
-        qDebug()<<"configuration: SQLite\n";
+        qDebug()<<"configuration: SQLite";
         dbFile = s.value("database/file","").toString();
         if(dbFile.isEmpty()){
             dbFile = QFileDialog::getSaveFileName(this,tr("Vyber soubor databáze"),QDir::homePath());
             if(dbFile.isEmpty()) dbFile="database.sqlite";
         }
     }else if(QString::compare(dbType,"sqlTest",Qt::CaseInsensitive) == 0){
-        qDebug()<<"configuration: SQLtest\n";
+        qDebug()<<"configuration: SQLtest";
         dbFile="database.sqlite";
     }
 }
@@ -58,6 +61,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     connect(ui->pushButton_3,SIGNAL(clicked(bool)),this,SLOT(testFn()));
     connect(ui->checkBox,SIGNAL(stateChanged(int)),this,SLOT(loadContracts()));
+    connect(ui->checkBox_2,SIGNAL(stateChanged(int)),this,SLOT(loadPersons()));
 }
 
 MainWindow::~MainWindow()
@@ -65,20 +69,7 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void MainWindow::on_pushButton_2_clicked()
-{
-    QSqlDatabase db = QSqlDatabase::addDatabase("QMYSQL3");
-    db.setHostName("sql.endora.cz");
-    db.setDatabaseName("datla1401368631");
-    db.setUserName("datla14013686312");
-    db.setPassword("tROeCx1");
-    bool ok = db.open();
 
-    if(ok)
-        qDebug() << "Je to ok\n";
-    else
-        qDebug() << "Spojeni nic"<< db.lastError().text() <<"\n";
-}
 
 void MainWindow::loadContracts()
 {
@@ -91,23 +82,81 @@ void MainWindow::loadContracts()
     ui->tableView->setColumnHidden(0,true);
     ui->tableView->setColumnWidth(2,150);
     ui->tableView->setEditTriggers(QAbstractItemView::NoEditTriggers);
+}
 
-    // TODO connect signals & slots ...
+void MainWindow::loadPersons()
+{
+    if(!db->isConnected()) {
+        qDebug() << "Koncim, protoze DB neni otevrena.\n";
+        return;
+    }
+
+    ui->tableView_2->setModel(db->getPersonsModel(ui->checkBox_2->isChecked()));
+    ui->tableView_2->setColumnHidden(0,true);
+    ui->tableView_2->setColumnWidth(1,120);
+    ui->tableView_2->setColumnWidth(2,180);
+    ui->tableView_2->setColumnWidth(3,150);
+    ui->tableView_2->setEditTriggers(QAbstractItemView::NoEditTriggers);
 }
 
 void MainWindow::testFn()
 {
-    qDebug() << "delam testFn" << endl;
+    qDebug() << "delam testFn";
     QMapIterator<int,QString> i(db->getPersonsName());
         while (i.hasNext()) {
             i.next();
             qDebug() << i.key() << ": "
-                 << i.value() << endl;
+                 << i.value();
         }
 }
 
-void MainWindow::on_pushButton_clicked()
+
+
+void MainWindow::on_tableView_doubleClicked(const QModelIndex &index)
+{
+    const QAbstractItemModel *m = index.model();
+    //qDebug()<< "Rowid" << m->data(index.sibling(index.row(),0)).toString();
+    int rowid=m->data(index.sibling(index.row(),0)).toInt();
+    Contract *c=new Contract(db,rowid);
+    contractForm f(db,c,this);
+    int r=f.exec();
+    if(r==f.Accepted) loadContracts();
+}
+
+void MainWindow::on_tabWidget_currentChanged(int tab)
+{
+    switch(tab){
+    case 0: // Contracts
+        loadContracts();
+        break;
+    case 1: // Persons
+        loadPersons();
+        break;
+    default:
+        break;
+    }
+}
+
+void MainWindow::on_btnAddContract_clicked()
 {
     contractForm form(db,this);
-    form.exec();
+    int res=form.exec();
+    if(res == QDialog::Accepted) loadContracts();
+}
+
+void MainWindow::on_btnAddPerson_clicked()
+{
+    personForm form(db,this);
+    int res=form.exec();
+    if(res==form.Accepted) loadPersons();
+}
+
+void MainWindow::on_tableView_2_doubleClicked(const QModelIndex &index)
+{
+    const QAbstractItemModel *m = index.model();
+    int rowid=m->data(index.sibling(index.row(),0)).toInt();
+    Person *p=new Person(db,rowid);
+    personForm f(db,p,this);
+    int r=f.exec();
+    if(r==f.Accepted) loadPersons();
 }

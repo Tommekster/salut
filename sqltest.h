@@ -20,9 +20,13 @@ public:
     void connect();
     //void query();
     QAbstractItemModel *getContractsModel(bool active);
+    QAbstractItemModel *getPersonsModel(bool);
     QMap<int, QString> getPersonsName();
     QMap<int, QString> getResidentsName(int);
     int insertIntoPersons(Person *);
+    void selectFromPersons(Person *);
+    int insertIntoContracts(Contract *);
+    void selectFromContracts(Contract *);
     void disconnect();
 };
 

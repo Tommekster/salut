@@ -18,19 +18,27 @@
 #include <QMimeData>
 #include <QDragEnterEvent>
 #include <QTableView>
+#include <QMessageBox>
 #include "contract.h"
 #include "personform.h"
 #include "sqlI.h"
 
-contractForm::contractForm(sqlI *_db,contract *c, QWidget *parent)
-    : QDialog(parent),addingNew(false),db(_db),_contract(c)
+contractForm::contractForm(sqlI *_db,Contract *c, QWidget *parent)
+    : QDialog(parent),addingNew(false),db(_db),_contract(c),ownContract(true)
 {
     createForm();
+    fillForm();
     setWindowTitle(tr("Edit contract"));
+    btnSubmit->setText(tr("&Save"));
+}
+
+contractForm::~contractForm()
+{
+    if(ownContract) delete _contract;
 }
 
 contractForm::contractForm(sqlI *_db,QWidget *parent)
-    : QDialog(parent),addingNew(true),db(_db)
+    : QDialog(parent),addingNew(true),db(_db),ownContract(false)
 {
     createForm();
     setWindowTitle(tr("Add contract"));
@@ -97,7 +105,26 @@ void contractForm::createForm()
     connect(cmbAddResident,SIGNAL(activated(int)),this,SLOT(on_cmbAddResident_activated(int)));
     connect(tbnAddResident,SIGNAL(clicked(bool)),this,SLOT(on_tbnAddResident_clicked()));
     connect(tbnOutResident,SIGNAL(clicked(bool)),this,SLOT(on_tbnOutResident_clicked()));
+    connect(btnSubmit,SIGNAL(clicked(bool)),this,SLOT(on_submit()));
     connect(btnCancel,SIGNAL(clicked(bool)),this,SLOT(reject()));
+}
+
+void contractForm::fillForm()
+{
+    edtCode->setText(_contract->getCode());
+    edtValidFrom->setDate(_contract->getFrom());
+    edtValidTo->setDate(_contract->getTo());
+    chkIsValid->setChecked(_contract->isValid());
+    cmbMainOwner->setCurrentIndex(cmbMainOwner->findData(_contract->getOwnerId()));
+    QList<int> residents=_contract->getResidentsIDs();
+
+    QList<int>::const_iterator i;
+    for (i = residents.constBegin(); i != residents.constEnd(); ++i){
+        cmbAddResident->setCurrentIndex(cmbAddResident->findData(*i));
+        // qDebug() << "resident ID: " << *i << ", text: "<<cmbAddResident->currentText();
+        on_tbnAddResident_clicked();
+    }
+
 }
 
 void contractForm::createNewPerson()
@@ -174,4 +201,33 @@ void contractForm::on_tbnOutResident_clicked()
     if(lstResidents->count() == 0) return;
 
     lstResidents->takeItem(lstResidents->currentRow());
+}
+
+void contractForm::on_submit()
+{
+    // kontrola spravnosti dat: treba create a new person nemuze byt drzitel sml.
+    if((cmbMainOwner->currentIndex()+1) == cmbMainOwner->count() &&
+            !QString::compare(cmbMainOwner->currentText(),tr("Create a new person"))){
+        QMessageBox::warning(this,tr("Choose contract`s owner!"),tr("Select contract`s owner! "));
+        return;
+    }
+
+    // vycuc rezidentu ze seznamu
+    QList<int> residents;
+    for(int i=0;i<lstResidents->count();i++){
+        QListWidgetItem *wi=lstResidents->item(i);
+        residents << wi->data(Qt::UserRole).toInt();
+    }
+    if(addingNew){
+        _contract = Contract::createContract(
+                    db,
+                    edtCode->text(),
+                    edtValidFrom->date(),
+                    edtValidTo->date(),
+                    chkIsValid->isChecked(),
+                    cmbMainOwner->currentData().toInt(),
+                    residents);
+        ownContract = true;
+        accept();
+    }
 }

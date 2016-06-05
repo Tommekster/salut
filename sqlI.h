@@ -6,6 +6,7 @@
 
 class QAbstractItemModel;
 class Person;
+class Contract;
 
 class sqlI : public QObject
 {
@@ -19,9 +20,13 @@ public:
     virtual void connect() = 0;
     //virtual void query() = 0;
     virtual QAbstractItemModel *getContractsModel(bool) = 0;
+    virtual QAbstractItemModel *getPersonsModel(bool) = 0;
     virtual QMap<int, QString> getPersonsName() = 0;
     virtual QMap<int, QString> getResidentsName(int) = 0;
     virtual int insertIntoPersons(Person *) = 0;
+    virtual void selectFromPersons(Person *) = 0;
+    virtual int insertIntoContracts(Contract *) = 0;
+    virtual void selectFromContracts(Contract *) = 0;
     virtual void disconnect() = 0;
 
     bool isConnected() {return connected;}

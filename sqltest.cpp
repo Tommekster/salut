@@ -5,8 +5,10 @@
 #include <QSqlQuery>
 #include <QDebug>
 #include <QSqlQueryModel>
+#include <QSqlRecord>
 
 #include "person.h"
+#include "contract.h"
 
 void sqlTest::connect()
 {
@@ -80,6 +82,37 @@ QAbstractItemModel *sqlTest::getContractsModel(bool active)
     return model;
 }
 
+QAbstractItemModel *sqlTest::getPersonsModel(bool active)
+{
+    QSqlQueryModel *model = new QSqlQueryModel(this);
+    QString Where("");
+    if(active){ // pouze s aktualni smlouvou
+        Where = " where Contracts.Active=1";
+    }
+    //model->setQuery("select rowid, Name || ' ' || Surname, Email, Phone from Persons",db);
+    /*model->setQuery("select Persons.rowid, Persons.Name || ' ' || Persons.Surname, Persons.Email, Persons.Phone "
+                    "from Persons inner join Contracts on Contracts.Owner = Persons.rowid"+Where, db);*/
+    // select Persons.rowid, Persons.Name || ' ' || Persons.Surname, Contracts.Code from Persons left join ContractsPersons on ContractsPersons.Person=Persons.rowid left join Contracts on (Contracts.rowid=ContractsPersons.Contract or Contracts.Owner=Persons.rowid) where Contracts.Active=1 group by Persons.rowid
+    // select Persons.rowid, Persons.Name || ' ' || Persons.Surname, Persons.Email, Persons.Phone, count(Contracts.Code) from Persons left join Contracts on Persons.rowid = Contracts.Owner group by Persons.rowid
+    model->setQuery("select Persons.rowid, Persons.Name || ' ' || Persons.Surname, Persons.Email, Persons.Phone from Persons "
+                    "left join ContractsPersons on ContractsPersons.Person=Persons.rowid "
+                    "left join Contracts on (Contracts.rowid=ContractsPersons.Contract or Contracts.Owner=Persons.rowid)"+
+                    Where+" group by Persons.rowid",db);
+
+    // Zahlavi
+    // 0 ... header rowid ... will be hidden
+    model->setHeaderData(1,Qt::Horizontal,tr("Name"));
+    model->setHeaderData(2,Qt::Horizontal,tr("E-mail"));
+    model->setHeaderData(3,Qt::Horizontal,tr("Phone"));
+
+    if(model->lastError().type() != QSqlError::NoError){
+        qDebug() << "Mam chybu v modelu: " << model->lastError().text();
+        return NULL; // TODO
+    }
+
+    return model;
+}
+
 QMap<int, QString> sqlTest::getResidentsName(int contr_id)
 {
     QSqlQuery q(db);
@@ -95,14 +128,90 @@ QMap<int, QString> sqlTest::getResidentsName(int contr_id)
 int sqlTest::insertIntoPersons(Person *p)
 {
     QSqlQuery q(db);
-    q.exec("insert into Persons (Name,Surname,Address,Email,Phone,Bank) values "
-           "('"+p->getName()+"', '"+p->getSurname()+"', '"+p->getAddress()+"', '"
-           +p->getEmail()+"', '"+p->getPhone()+"', '"+p->getBank()+"')");
+    q.prepare("insert into Persons (Name,Surname,Address,Email,Phone,Bank) values "
+           "(:name, :surname, :addr, :email, :phone, :bank)");
+    q.bindValue(":name",    p->getName());
+    q.bindValue(":surname", p->getSurname());
+    q.bindValue(":addr",    p->getAddress());
+    q.bindValue(":email",   p->getEmail());
+    q.bindValue(":phone",   p->getPhone());
+    q.bindValue(":bank",    p->getBank());
+    q.exec();
+
     if(q.numRowsAffected() <1){
         qDebug() << "insertInsertIntoPersons selhalo!";
         return -1;
     }else
         return q.lastInsertId().toInt();
+}
+
+void sqlTest::selectFromPersons(Person *p)
+{
+    QSqlQuery q(db);
+    q.prepare("select Name,Surname,Address,Email,Phone,Bank from Persons where rowid=:rowid");
+    q.bindValue(":rowid",p->getRowId());
+    q.exec();
+
+    if(q.first()){
+        p->setName(q.value("Name").toString());
+        p->setSurname(q.value("Surname").toString());
+        p->setAddress(q.value("Address").toString());
+        p->setEmail(q.value("Email").toString());
+        p->setPhone(q.value("Phone").toString());
+        p->setBank(q.value("Bank").toString());
+    }else{
+        qDebug() << "selectFromPersons: Zaznam nebyl nalezen!";
+    }
+}
+
+int sqlTest::insertIntoContracts(Contract *c)
+{
+    QSqlQuery q(db);
+    q.prepare("insert into Contracts (Code,Validf,Validt,Active,Owner)"
+              "values (:code,:vfrom,:vto,:valid,:own)");
+    q.bindValue(":code",  c->getCode());
+    q.bindValue(":vfrom", c->getFrom());
+    q.bindValue(":vto",   c->getTo());
+    q.bindValue(":valid", c->isValid());
+    q.bindValue(":own",   c->getOwnerId());
+    q.exec();
+
+    // TODO: sem to chce binding residentu
+
+
+    if(q.numRowsAffected() <1){
+        qDebug() << "insertInsertIntoContracts selhalo!";
+        return -1;
+    }else
+        return q.lastInsertId().toInt();
+}
+
+void sqlTest::selectFromContracts(Contract *c)
+{
+    QSqlQuery q(db);
+    q.prepare("select Code,Validf,Validt,Active,Owner from Contracts where rowid=:id");
+    q.bindValue(":id",c->getRowId());
+    q.exec();
+
+    if(q.first()){
+        c->setCode(q.value("Code").toString());
+        c->setFrom(q.value("Validf").toDate());
+        c->setTo(q.value("Validt").toDate());
+        c->setValid(q.value("Active").toBool());
+        c->setOwnerId(q.value("Owner").toInt());
+
+        // load residents
+        QList<int> residents;
+        q.prepare("select Person from ContractsPersons where Contract=:rowid");
+        q.bindValue(":rowid",c->getRowId());
+        q.exec();
+        while(q.next()){
+            residents << q.value("Person").toInt();
+        }
+        c->addResidents(residents);
+    }else{
+        qDebug() << "selectFromContracts: Zaznam nebyl nalezen!";
+    }
 }
 
 QMap<int, QString> sqlTest::getPersonsName()
@@ -113,7 +222,7 @@ QMap<int, QString> sqlTest::getPersonsName()
     while(q.next()){
         m.insert(q.value(0).toInt(),q.value(1).toString());
     }
-    qDebug() << q.lastError().text() << endl;
+    //qDebug() << q.lastError().text() << endl;
     return m;
 }
 

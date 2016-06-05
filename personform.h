@@ -31,14 +31,16 @@ class personForm : public QDialog
     QPushButton *btnCancel;
 
     void createForm();
+    void fillForm();
+
     bool addingNew;
     Person *_person;
     bool ownPerson;
     sqlI *db;
 
 public:
-    explicit personForm(sqlI *_db, Person *p,QDialog *parent = 0);
-    explicit personForm(sqlI *_db, QDialog *parent = 0);
+    explicit personForm(sqlI *_db, Person *p, QWidget *parent = 0);
+    explicit personForm(sqlI *_db, QWidget *parent = 0);
     ~personForm();
 
     Person *getPerson(){ownPerson=false;return _person;}
