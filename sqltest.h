@@ -17,17 +17,18 @@ public:
 
     // sqlI interface
 public:
-    void connect();
+    virtual void connect();
     //void query();
-    QAbstractItemModel *getContractsModel(bool active);
-    QAbstractItemModel *getPersonsModel(bool);
-    QMap<int, QString> getPersonsName();
-    QMap<int, QString> getResidentsName(int);
-    int insertIntoPersons(Person *);
-    void selectFromPersons(Person *);
-    int insertIntoContracts(Contract *);
-    void selectFromContracts(Contract *);
-    void disconnect();
+    virtual QAbstractItemModel *getContractsModel(bool active);
+    virtual QAbstractItemModel *getPersonsModel(bool);
+    virtual QMap<int, QString> getPersonsName();
+    //virtual QMap<int, QString> getResidentsName(int);
+    virtual int insertIntoPersons(Person *);
+    virtual void selectFromPersons(Person *);
+    virtual int insertIntoContracts(Contract *);
+    virtual void selectFromContracts(Contract *);
+    virtual void updateContract(Contract *,bool,bool,bool,bool,bool,QList<int> &,QList<int> &);
+    virtual void disconnect();
 };
 
 #endif // SQLTEST_H

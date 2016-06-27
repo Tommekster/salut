@@ -62,7 +62,7 @@ void personForm::fillForm()
 }
 
 personForm::personForm(sqlI *_db, Person *p, QWidget *parent)
-    : QDialog(parent), addingNew(false), ownPerson(true), db(_db), _person(p)
+    : QDialog(parent), addingNew(false), _person(p), ownPerson(true), db(_db)
 {
     createForm();
     fillForm();

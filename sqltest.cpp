@@ -26,20 +26,20 @@ void sqlTest::connect()
 
     // Fill test database
     QSqlQuery q(db);
-    q.exec("create table Contracts (rowid integer primary key, Code varchar unique not null, Validf date, Validt date, Active boolean, Owner integer)");
+    q.exec("create table Contracts (rowid integer primary key, Code varchar unique not null, Validf date, Validt date, Active boolean, Owner integer, Archived boolean)");
     //q.exec("create table Contracts (Code varchar unique not null, Validf date, Validt date, Active boolean, Owner integer)");
-    q.exec("insert into Contracts values (1, '2014/01', '2014-09-01', '2015-05-31', 0, 1)");
-    q.exec("insert into Contracts values (2, '2014/02', '2014-10-01', '2015-05-31', 0, 2)");
-    q.exec("insert into Contracts values (3, '2015/01', '2015-10-01', '2016-05-31', 1, 2)");
-    q.exec("insert into Contracts values (4, '2015/02', '2015-11-01', '2016-10-31', 1, 6)");
+    q.exec("insert into Contracts values (1, '2014/01', '2014-09-01', '2015-05-31', 0, 1, 0)");
+    q.exec("insert into Contracts values (2, '2014/02', '2014-10-01', '2015-05-31', 0, 2, 0)");
+    q.exec("insert into Contracts values (3, '2015/01', '2015-10-01', '2016-05-31', 1, 2, 0)");
+    q.exec("insert into Contracts values (4, '2015/02', '2015-11-01', '2016-10-31', 1, 6, 0)");
 
-    q.exec("create table Persons (rowid integer primary key, Name varchar, Surname varchar, Address text, Email varchar, Phone varchar, Bank varchar)");
-    q.exec("insert into Persons values (1,'Gustav', 'Mogg', '212 Front Street, Centreville, VA 20120', 'g.mogg@email.abc', '+420123456789', '123456789/0987')");
-    q.exec("insert into Persons values (2,'Joe', 'Broom', '514 Adams Avenue, Lakeland, FL 33801', 'joebroom@gmail.co.uk', '+420987654321', '987654321/0908')");
-    q.exec("insert into Persons values (3,'Madeleine', 'Lefebvre', '961 Lincoln Avenue, Sewell, NJ 08080', 'madeleine.lefebvre@gmail.com', '+420456789123', '132465798/0195')");
-    q.exec("insert into Persons values (4,'Stacey', 'Janes', '679 Buttonwood Drive, Hyattsville, MD 20782', 'janess@email.co.uk', '+420789123456', '369268158/0200')");
-    q.exec("insert into Persons values (5,'Herve', 'Dupont', '18 Canterbury Court, Willingboro, NJ 08046', 'hDupont@mail.at', '+420987456321', '147258369/0100')");
-    q.exec("insert into Persons values (6,'Julianne', 'Dupont', '630 Brown Street, Menomonee Falls, WI 53051', 'julianned@yandex.ru', '+420987456321', '159267348/0900')");
+    q.exec("create table Persons (rowid integer primary key, Name varchar, Surname varchar, Address text, Email varchar, Phone varchar, Bank varchar, Archived boolean)");
+    q.exec("insert into Persons values (1,'Gustav', 'Mogg', '212 Front Street, Centreville, VA 20120', 'g.mogg@email.abc', '+420123456789', '123456789/0987', 0)");
+    q.exec("insert into Persons values (2,'Joe', 'Broom', '514 Adams Avenue, Lakeland, FL 33801', 'joebroom@gmail.co.uk', '+420987654321', '987654321/0908', 0)");
+    q.exec("insert into Persons values (3,'Madeleine', 'Lefebvre', '961 Lincoln Avenue, Sewell, NJ 08080', 'madeleine.lefebvre@gmail.com', '+420456789123', '132465798/0195', 0)");
+    q.exec("insert into Persons values (4,'Stacey', 'Janes', '679 Buttonwood Drive, Hyattsville, MD 20782', 'janess@email.co.uk', '+420789123456', '369268158/0200', 0)");
+    q.exec("insert into Persons values (5,'Herve', 'Dupont', '18 Canterbury Court, Willingboro, NJ 08046', 'hDupont@mail.at', '+420987456321', '147258369/0100', 0)");
+    q.exec("insert into Persons values (6,'Julianne', 'Dupont', '630 Brown Street, Menomonee Falls, WI 53051', 'julianned@yandex.ru', '+420987456321', '159267348/0900', 0)");
 
     q.exec("create table ContractsPersons (Contract integer, Person integer, Tenant bool, VarSym integer)");
     q.exec("insert into ContractsPersons values (1, 1, 1, 141)");
@@ -113,18 +113,6 @@ QAbstractItemModel *sqlTest::getPersonsModel(bool active)
     return model;
 }
 
-QMap<int, QString> sqlTest::getResidentsName(int contr_id)
-{
-    QSqlQuery q(db);
-    QMap<int,QString> m;
-    q.exec("select rowid, Name || ' ' || Surname from Persons");
-    while(q.next()){
-        m.insert(q.value(0).toInt(),q.value(1).toString());
-    }
-    qDebug() << q.lastError().text() << endl;
-    return m;
-}
-
 int sqlTest::insertIntoPersons(Person *p)
 {
     QSqlQuery q(db);
@@ -139,7 +127,7 @@ int sqlTest::insertIntoPersons(Person *p)
     q.exec();
 
     if(q.numRowsAffected() <1){
-        qDebug() << "insertInsertIntoPersons selhalo!";
+        qDebug() << "insertIntoPersons selhalo!";
         return -1;
     }else
         return q.lastInsertId().toInt();
@@ -211,6 +199,48 @@ void sqlTest::selectFromContracts(Contract *c)
         c->addResidents(residents);
     }else{
         qDebug() << "selectFromContracts: Zaznam nebyl nalezen!";
+    }
+}
+
+void sqlTest::updateContract(Contract *c, bool code, bool from, bool to, bool valid, bool ownId, QList<int> &add, QList<int> &remove)
+{
+    if(code || from || to || valid || ownId){
+        QSqlQuery q(db);
+        QStringList set;
+        if(code) set << "code=:code";
+        if(from) set << "Validf=:vfrom";
+        if(to) set << "Validt=:vto";
+        if(valid) set << "Active=:valid";
+        if(ownId) set << "Owner=:own";
+
+        q.prepare("update Contracts set "+set.join(",")+" where rowid=:id");
+        q.bindValue(":id",c->getRowId());
+        q.bindValue(":code",  c->getCode());
+        q.bindValue(":vfrom", c->getFrom());
+        q.bindValue(":vto",   c->getTo());
+        q.bindValue(":valid", c->isValid());
+        q.bindValue(":own",   c->getOwnerId());
+        q.exec();
+    }
+    if(!add.isEmpty()){
+        QSqlQuery q(db);
+        QList<int>::const_iterator i;
+        for (i = add.constBegin(); i != add.constEnd(); ++i){
+            q.prepare("insert into ContractsPersons (Contract, Person, Tenant, VarSym) values (:contract, :person, 0, 0)");
+            q.bindValue(":contract", c->getRowId());
+            q.bindValue(":person", *i);
+            q.exec();
+        }
+    }
+    if(!remove.isEmpty()){
+        QSqlQuery q(db);
+        QList<int>::const_iterator i;
+        for (i = remove.constBegin(); i != remove.constEnd(); ++i){
+            q.prepare("delete from ContractsPersons where Contract=:contract and Person=:person");
+            q.bindValue(":contract", c->getRowId());
+            q.bindValue(":person", *i);
+            q.exec();
+        }
     }
 }
 

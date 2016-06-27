@@ -26,6 +26,10 @@ class Contract
 
     void save();
 
+    bool chCode, chFrom, chTo, chValid, chOwnerId;
+    QList<int> newResidents;
+    QList<int> removeResidents;
+
 public:
     Contract(sqlI *_db);
     Contract(sqlI *_db,int id);
@@ -55,7 +59,16 @@ public:
     void setTo(QDate d){vTo=d;}
     void setValid(bool b){valid=b;}
     void setOwnerId(int i){ownerId=i;}
-    void addResidents(QList<int> &);
+    void addResidents(QList<int> &l){residents.append(l);}
+
+    // update
+    void updCode(QString);
+    void updFrom(QDate);
+    void updTo(QDate);
+    void updValid(bool);
+    void updOwnerId(int);
+    void updResidents(QList<int> &);
+    void update();
 };
 
 #endif // CONTRACT_H

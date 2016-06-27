@@ -229,5 +229,15 @@ void contractForm::on_submit()
                     residents);
         ownContract = true;
         accept();
+    }else{
+        _contract->updCode(edtCode->text());
+        _contract->updFrom(edtValidFrom->date());
+        _contract->updTo(edtValidTo->date());
+        _contract->updValid(chkIsValid->isChecked());
+        _contract->updOwnerId(cmbMainOwner->currentData().toInt());
+        _contract->updResidents(residents);
+
+        _contract->update();
+        accept();
     }
 }
