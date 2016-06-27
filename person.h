@@ -27,6 +27,8 @@ class Person
 
     void save();
 
+    bool chName, chSurname, chAddress, chEmail, chPhone, chBank;
+
 public:
     Person(sqlI *_db);
     Person(sqlI *_db,int);
@@ -57,8 +59,17 @@ public:
     void setPhone(QString s){phone=s;}
     void setBank(QString s){bank=s;}
 
+    // update
+    void updName(QString);
+    void updSurname(QString);
+    void updAddress(QString);
+    void updEmail(QString);
+    void updPhone(QString);
+    void updBank(QString);
+    void update();
+
     QList<Contract> getAllContracts()const;
-    bool isGeneric()const{return generic;}
+    bool isGeneric()const{return generic;} // Proc to tu je?
     Contract *getCurrContract()const;
     bool isTenant()const{if(!generic) return tenant; else return false;}
 };

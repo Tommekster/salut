@@ -95,5 +95,16 @@ void personForm::on_submit()
                     edtBank->text());
         ownPerson=true;
         accept();
+    }else{
+        _person->updName(edtName->text());
+        _person->updSurname(edtSurname->text());
+        _person->updAddress(edtAddress->toPlainText());
+        _person->updEmail(edtEmail->text());
+        _person->updPhone(edtPhone->text());
+        _person->updBank(edtBank->text());
+
+        _person->update();
+        accept();
     }
+
 }

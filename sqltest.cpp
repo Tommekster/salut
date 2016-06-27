@@ -152,6 +152,31 @@ void sqlTest::selectFromPersons(Person *p)
     }
 }
 
+void sqlTest::updatePerson(Person *p, bool name, bool surname, bool address, bool email, bool phone, bool bank)
+{
+    if(name || surname || address || email || phone || bank){
+        QSqlQuery q(db);
+        QStringList set;
+
+        if(name) set << "Name=:name";
+        if(surname) set << "Surname=:surname";
+        if(address) set << "Address=:addr";
+        if(email) set << "Email=:email";
+        if(phone) set << "Phone=:phone";
+        if(bank) set << "Bank=:bank";
+
+        q.prepare("update Persons set "+set.join(",")+" where rowid=:id");
+        q.bindValue(":id",      p->getRowId());
+        q.bindValue(":name",    p->getName());
+        q.bindValue(":surname", p->getSurname());
+        q.bindValue(":addr",    p->getAddress());
+        q.bindValue(":email",   p->getEmail());
+        q.bindValue(":phone",   p->getPhone());
+        q.bindValue(":bank",    p->getBank());
+        q.exec();
+    }
+}
+
 int sqlTest::insertIntoContracts(Contract *c)
 {
     QSqlQuery q(db);
@@ -164,14 +189,24 @@ int sqlTest::insertIntoContracts(Contract *c)
     q.bindValue(":own",   c->getOwnerId());
     q.exec();
 
-    // TODO: sem to chce binding residentu
-
-
     if(q.numRowsAffected() <1){
         qDebug() << "insertInsertIntoContracts selhalo!";
         return -1;
-    }else
-        return q.lastInsertId().toInt();
+    }else{
+        int rowid = q.lastInsertId().toInt();
+
+        // Nakonec ke smlouve prilozime residenty
+        QList<int> add=c->getResidentsIDs();
+        QList<int>::const_iterator i;
+        for (i = add.constBegin(); i != add.constEnd(); ++i){
+            q.prepare("insert into ContractsPersons (Contract, Person, Tenant, VarSym) values (:contract, :person, 0, 0)");
+            q.bindValue(":contract", rowid);
+            q.bindValue(":person", *i);
+            q.exec();
+        }
+
+        return rowid;
+    }
 }
 
 void sqlTest::selectFromContracts(Contract *c)
@@ -207,6 +242,7 @@ void sqlTest::updateContract(Contract *c, bool code, bool from, bool to, bool va
     if(code || from || to || valid || ownId){
         QSqlQuery q(db);
         QStringList set;
+
         if(code) set << "code=:code";
         if(from) set << "Validf=:vfrom";
         if(to) set << "Validt=:vto";
