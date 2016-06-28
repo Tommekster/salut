@@ -3,6 +3,7 @@
 
 #include <QString>
 #include <QList>
+#include <QDate>
 
 class Contract;
 class sqlI;
@@ -13,6 +14,7 @@ class Person
 
     QString name;
     QString surname;
+    QDate birthDate;
     QString address;
     QString email;
     QString phone;
@@ -27,7 +29,7 @@ class Person
 
     void save();
 
-    bool chName, chSurname, chAddress, chEmail, chPhone, chBank;
+    bool chName, chSurname, chBirthDate, chAddress, chEmail, chPhone, chBank;
 
 public:
     Person(sqlI *_db);
@@ -37,6 +39,7 @@ public:
             sqlI *db,
             const QString &name,
             const QString &surname,
+            const QDate &birthDate,
             const QString &address,
             const QString &email,
             const QString &phone,
@@ -45,6 +48,7 @@ public:
     // gettry
     QString getName()const{return name;}
     QString getSurname()const{return surname;}
+    QDate   getBirthDate()const{return birthDate;}
     QString getAddress()const{return address;}
     QString getEmail()const{return email;}
     QString getPhone()const{return phone;}
@@ -54,6 +58,7 @@ public:
     // settry
     void setName(QString s){name=s;}
     void setSurname(QString s){surname=s;}
+    void setBirthDate(QDate d){birthDate=d;}
     void setAddress(QString s){address=s;}
     void setEmail(QString s){email=s;}
     void setPhone(QString s){phone=s;}
@@ -62,6 +67,7 @@ public:
     // update
     void updName(QString);
     void updSurname(QString);
+    void updBirthDate(QDate);
     void updAddress(QString);
     void updEmail(QString);
     void updPhone(QString);

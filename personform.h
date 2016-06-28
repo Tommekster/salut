@@ -6,6 +6,7 @@
 class QLabel;
 class QLineEdit;
 class QTextEdit;
+class QDateEdit;
 class QPushButton;
 class Person;
 class sqlI;
@@ -18,6 +19,8 @@ class personForm : public QDialog
     QLineEdit *edtName;
     QLabel *lblSurname;
     QLineEdit *edtSurname;
+    QLabel *lblBirthDate;
+    QDateEdit *edtBirthDate;
     QLabel *lblAddress;
     QTextEdit *edtAddress;
     QLabel *lblEmail;

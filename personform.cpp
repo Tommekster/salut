@@ -4,6 +4,7 @@
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QLineEdit>
+#include <QDateEdit>
 #include <QPushButton>
 #include <QTextEdit>
 #include "person.h"
@@ -15,6 +16,8 @@ void personForm::createForm()
     edtName = new QLineEdit(this);
     lblSurname = new QLabel(tr("Surname"),this);
     edtSurname = new QLineEdit(this);
+    lblBirthDate = new QLabel(tr("Birth Date"),this);
+    edtBirthDate = new QDateEdit(this);
     lblAddress = new QLabel(tr("Address"));
     edtAddress = new QTextEdit(this);
     lblEmail = new QLabel(tr("Email"),this);
@@ -34,6 +37,7 @@ void personForm::createForm()
     QFormLayout *lForm = new QFormLayout;
     lForm->addRow(lblName,edtName);
     lForm->addRow(lblSurname,edtSurname);
+    lForm->addRow(lblBirthDate,edtBirthDate);
     lForm->addRow(lblAddress,edtAddress);
     lForm->addRow(lblEmail,edtEmail);
     lForm->addRow(lblPhone,edtPhone);
@@ -55,6 +59,7 @@ void personForm::fillForm()
 {
     edtName->setText(_person->getName());
     edtSurname->setText(_person->getSurname());
+    edtBirthDate->setDate(_person->getBirthDate());
     edtAddress->setText(_person->getAddress());
     edtEmail->setText(_person->getEmail());
     edtPhone->setText(_person->getPhone());
@@ -89,6 +94,7 @@ void personForm::on_submit()
                     db,
                     edtName->text(),
                     edtSurname->text(),
+                    edtBirthDate->date(),
                     edtAddress->toPlainText(),
                     edtEmail->text(),
                     edtPhone->text(),
@@ -98,6 +104,7 @@ void personForm::on_submit()
     }else{
         _person->updName(edtName->text());
         _person->updSurname(edtSurname->text());
+        _person->updBirthDate(edtBirthDate->date());
         _person->updAddress(edtAddress->toPlainText());
         _person->updEmail(edtEmail->text());
         _person->updPhone(edtPhone->text());

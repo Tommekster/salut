@@ -12,19 +12,19 @@ void Person::save()
             rowid=id;
         }
     }else{
-        db->updatePerson(this, chName, chSurname, chAddress, chEmail, chPhone, chBank);
+        db->updatePerson(this, chName, chSurname, chBirthDate, chAddress, chEmail, chPhone, chBank);
     }
 }
 
 Person::Person(sqlI *_db)
     : db(_db),isNew(true),
-      chName(false), chSurname(false), chAddress(false),
+      chName(false), chSurname(false), chBirthDate(false), chAddress(false),
       chEmail(false), chPhone(false), chBank(false)
 {}
 
 Person::Person(sqlI *_db, int id)
     :db(_db),isNew(false),rowid(id),
-      chName(false), chSurname(false), chAddress(false),
+      chName(false), chSurname(false), chBirthDate(false), chAddress(false),
       chEmail(false), chPhone(false), chBank(false)
 {
     db->selectFromPersons(this);
@@ -33,6 +33,7 @@ Person::Person(sqlI *_db, int id)
 Person *Person::createPerson(sqlI *db,
         const QString &name,
         const QString &surname,
+        const QDate &birthDate,
         const QString &address,
         const QString &email,
         const QString &phone,
@@ -41,6 +42,7 @@ Person *Person::createPerson(sqlI *db,
     Person *p = new Person(db);
     p->name=name;
     p->surname=surname;
+    p->birthDate=birthDate;
     p->address=address;
     p->email=email;
     p->phone=phone;
@@ -66,6 +68,15 @@ void Person::updSurname(QString s)
 
     surname=s;
     chSurname=true;
+}
+
+void Person::updBirthDate(QDate d)
+{
+    if(isNew) return; // jeste neni v databazi
+    if(birthDate == d) return; // neni zmena
+
+    birthDate=d;
+    chBirthDate=true;
 }
 
 void Person::updAddress(QString s)

@@ -25,7 +25,7 @@ public:
     //virtual QMap<int, QString> getResidentsName(int);
     virtual int insertIntoPersons(Person *);
     virtual void selectFromPersons(Person *);
-    virtual void updatePerson(Person *,bool,bool,bool,bool,bool,bool);
+    virtual void updatePerson(Person *,bool,bool,bool,bool,bool,bool,bool);
     virtual int insertIntoContracts(Contract *);
     virtual void selectFromContracts(Contract *);
     virtual void updateContract(Contract *,bool,bool,bool,bool,bool,QList<int> &,QList<int> &);

@@ -33,13 +33,13 @@ void sqlTest::connect()
     q.exec("insert into Contracts values (3, '2015/01', '2015-10-01', '2016-05-31', 1, 2, 0)");
     q.exec("insert into Contracts values (4, '2015/02', '2015-11-01', '2016-10-31', 1, 6, 0)");
 
-    q.exec("create table Persons (rowid integer primary key, Name varchar, Surname varchar, Address text, Email varchar, Phone varchar, Bank varchar, Archived boolean)");
-    q.exec("insert into Persons values (1,'Gustav', 'Mogg', '212 Front Street, Centreville, VA 20120', 'g.mogg@email.abc', '+420123456789', '123456789/0987', 0)");
-    q.exec("insert into Persons values (2,'Joe', 'Broom', '514 Adams Avenue, Lakeland, FL 33801', 'joebroom@gmail.co.uk', '+420987654321', '987654321/0908', 0)");
-    q.exec("insert into Persons values (3,'Madeleine', 'Lefebvre', '961 Lincoln Avenue, Sewell, NJ 08080', 'madeleine.lefebvre@gmail.com', '+420456789123', '132465798/0195', 0)");
-    q.exec("insert into Persons values (4,'Stacey', 'Janes', '679 Buttonwood Drive, Hyattsville, MD 20782', 'janess@email.co.uk', '+420789123456', '369268158/0200', 0)");
-    q.exec("insert into Persons values (5,'Herve', 'Dupont', '18 Canterbury Court, Willingboro, NJ 08046', 'hDupont@mail.at', '+420987456321', '147258369/0100', 0)");
-    q.exec("insert into Persons values (6,'Julianne', 'Dupont', '630 Brown Street, Menomonee Falls, WI 53051', 'julianned@yandex.ru', '+420987456321', '159267348/0900', 0)");
+    q.exec("create table Persons (rowid integer primary key, Name varchar, Surname varchar, BirthDate date, Address text, Email varchar, Phone varchar, Bank varchar, Archived boolean)");
+    q.exec("insert into Persons values (1,'Gustav', 'Mogg', '1989-09-21', '212 Front Street, Centreville, VA 20120', 'g.mogg@email.abc', '+420123456789', '123456789/0987', 0)");
+    q.exec("insert into Persons values (2,'Joe', 'Broom', '1993-06-01', '514 Adams Avenue, Lakeland, FL 33801', 'joebroom@gmail.co.uk', '+420987654321', '987654321/0908', 0)");
+    q.exec("insert into Persons values (3,'Madeleine', 'Lefebvre', '1965-02-03', '961 Lincoln Avenue, Sewell, NJ 08080', 'madeleine.lefebvre@gmail.com', '+420456789123', '132465798/0195', 0)");
+    q.exec("insert into Persons values (4,'Stacey', 'Janes', '1978-04-09', '679 Buttonwood Drive, Hyattsville, MD 20782', 'janess@email.co.uk', '+420789123456', '369268158/0200', 0)");
+    q.exec("insert into Persons values (5,'Herve', 'Dupont', '1988-05-27', '18 Canterbury Court, Willingboro, NJ 08046', 'hDupont@mail.at', '+420987456321', '147258369/0100', 0)");
+    q.exec("insert into Persons values (6,'Julianne', 'Dupont', '1990-07-13', '630 Brown Street, Menomonee Falls, WI 53051', 'julianned@yandex.ru', '+420987456321', '159267348/0900', 0)");
 
     q.exec("create table ContractsPersons (Contract integer, Person integer, Tenant bool, VarSym integer)");
     q.exec("insert into ContractsPersons values (1, 1, 1, 141)");
@@ -116,10 +116,11 @@ QAbstractItemModel *sqlTest::getPersonsModel(bool active)
 int sqlTest::insertIntoPersons(Person *p)
 {
     QSqlQuery q(db);
-    q.prepare("insert into Persons (Name,Surname,Address,Email,Phone,Bank) values "
-           "(:name, :surname, :addr, :email, :phone, :bank)");
+    q.prepare("insert into Persons (Name,Surname,BirthDate,Address,Email,Phone,Bank) values "
+           "(:name, :surname, :bdate, :addr, :email, :phone, :bank)");
     q.bindValue(":name",    p->getName());
     q.bindValue(":surname", p->getSurname());
+    q.bindValue(":bdate",   p->getBirthDate());
     q.bindValue(":addr",    p->getAddress());
     q.bindValue(":email",   p->getEmail());
     q.bindValue(":phone",   p->getPhone());
@@ -136,13 +137,14 @@ int sqlTest::insertIntoPersons(Person *p)
 void sqlTest::selectFromPersons(Person *p)
 {
     QSqlQuery q(db);
-    q.prepare("select Name,Surname,Address,Email,Phone,Bank from Persons where rowid=:rowid");
+    q.prepare("select Name,Surname,BirthDate,Address,Email,Phone,Bank from Persons where rowid=:rowid");
     q.bindValue(":rowid",p->getRowId());
     q.exec();
 
     if(q.first()){
         p->setName(q.value("Name").toString());
         p->setSurname(q.value("Surname").toString());
+        p->setBirthDate(q.value("BirthDate").toDate());
         p->setAddress(q.value("Address").toString());
         p->setEmail(q.value("Email").toString());
         p->setPhone(q.value("Phone").toString());
@@ -152,14 +154,15 @@ void sqlTest::selectFromPersons(Person *p)
     }
 }
 
-void sqlTest::updatePerson(Person *p, bool name, bool surname, bool address, bool email, bool phone, bool bank)
+void sqlTest::updatePerson(Person *p, bool name, bool surname, bool bdate, bool address, bool email, bool phone, bool bank)
 {
-    if(name || surname || address || email || phone || bank){
+    if(name || surname || bdate || address || email || phone || bank){
         QSqlQuery q(db);
         QStringList set;
 
         if(name) set << "Name=:name";
         if(surname) set << "Surname=:surname";
+        if(bdate) set << "BirthDate=:bdate";
         if(address) set << "Address=:addr";
         if(email) set << "Email=:email";
         if(phone) set << "Phone=:phone";
@@ -169,6 +172,7 @@ void sqlTest::updatePerson(Person *p, bool name, bool surname, bool address, boo
         q.bindValue(":id",      p->getRowId());
         q.bindValue(":name",    p->getName());
         q.bindValue(":surname", p->getSurname());
+        q.bindValue(":bdate",   p->getBirthDate());
         q.bindValue(":addr",    p->getAddress());
         q.bindValue(":email",   p->getEmail());
         q.bindValue(":phone",   p->getPhone());
