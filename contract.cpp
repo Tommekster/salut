@@ -12,18 +12,18 @@ void Contract::save()
             rowid=id;
         }
     }else{
-        db->updateContract(this,chCode,chFrom,chTo,chValid,chOwnerId,newResidents,removeResidents);
+        db->updateContract(this,chCode,chFrom,chTo,chValid,chOwnerId,chFlatId,newResidents,removeResidents);
     }
 }
 
 Contract::Contract(sqlI *_db)
     : db(_db), owner(NULL), isNew(true),
-      chCode(false), chFrom(false), chTo(false), chValid(false), chOwnerId(false)
+      chCode(false), chFrom(false), chTo(false), chValid(false), chOwnerId(false), chFlatId(false)
 {}
 
 Contract::Contract(sqlI *_db,int id)
     : db(_db), rowid(id), owner(NULL), isNew(false),
-      chCode(false), chFrom(false), chTo(false), chValid(false), chOwnerId(false)
+      chCode(false), chFrom(false), chTo(false), chValid(false), chOwnerId(false), chFlatId(false)
 {
     db->selectFromContracts(this);
 }
@@ -32,7 +32,7 @@ Contract *Contract::createContract(sqlI *db,
                                    const QString &code,
                                    const QDate &vfrom,
                                    const QDate &vto,
-                                   bool valid, int ownId,
+                                   bool valid, int ownId, int flatId,
                                    const QList<int> &residents)
 {
     Contract *c=new Contract(db);
@@ -90,6 +90,15 @@ void Contract::updOwnerId(int i)
 
     ownerId=i;
     chOwnerId=true;
+}
+
+void Contract::updFlatId(int i)
+{
+    if(isNew) return;
+    if(flatId==i) return;
+
+    flatId=i;
+    chFlatId=true;
 }
 
 void Contract::updResidents(QList<int> &novy)

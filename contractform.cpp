@@ -58,6 +58,8 @@ void contractForm::createForm()
     edtValidTo = new QDateEdit(QDate::currentDate(),this);
     chkIsValid = new QCheckBox(tr("Contract is active"),this);
     chkIsValid->setChecked(true);
+    lblFlat = new QLabel(tr("Flat"),this);
+    cmbFlat = new QComboBox(this);
     lblMainOwner = new QLabel(tr("Tendant"),this);
     cmbMainOwner = new QComboBox(this);
     lblResidents = new QLabel(tr("Residents"),this);
@@ -82,6 +84,7 @@ void contractForm::createForm()
     lForm->addRow(lblValidFrom,edtValidFrom);
     lForm->addRow(lblValidTo,edtValidTo);
     lForm->addRow("",chkIsValid);
+    lForm->addRow(lblFlat,cmbFlat);
     lForm->addRow(lblMainOwner,cmbMainOwner);
     lForm->addRow(lblResidents);
     lForm->addRow(lstResidents);
@@ -99,6 +102,7 @@ void contractForm::createForm()
     setLayout(lMain);
 
     fillPersons();
+    fillFlats();
 
     // Signals & slots
     connect(cmbMainOwner,SIGNAL(activated(int)),this,SLOT(on_cmbMainOwner_activated(int)));
@@ -115,6 +119,7 @@ void contractForm::fillForm()
     edtValidFrom->setDate(_contract->getFrom());
     edtValidTo->setDate(_contract->getTo());
     chkIsValid->setChecked(_contract->isValid());
+    cmbFlat->setCurrentIndex(cmbFlat->findData(_contract->getFlatId()));
     cmbMainOwner->setCurrentIndex(cmbMainOwner->findData(_contract->getOwnerId()));
     QList<int> residents=_contract->getResidentsIDs();
 
@@ -141,16 +146,11 @@ void contractForm::fillPersons()
     if(cmbMainOwner->count()>0) cmbMainOwner->clear();
     if(cmbAddResident->count()>0) cmbAddResident->clear();
     // Fill Owner ComboBox
-    int ownId=0;
-    //if(!addingNew) ownId = _contract->getOwnerId();
     QMapIterator<int,QString> person(db->getPersonsName());
     while(person.hasNext()){
         person.next();
-        if(!addingNew && ownId == person.key())
-            cmbMainOwner->insertItem(0,person.value(),person.key());
-        else
-            cmbMainOwner->addItem(person.value(),person.key());
-            cmbAddResident->addItem(person.value(),person.key());
+        cmbMainOwner->addItem(person.value(),person.key());
+        cmbAddResident->addItem(person.value(),person.key());
     }
     cmbMainOwner->insertSeparator(cmbMainOwner->count());
     cmbMainOwner->addItem(tr("Create a new person"));
@@ -159,11 +159,14 @@ void contractForm::fillPersons()
     cmbAddResident->addItem(tr("Create a new person"));
 }
 
-void contractForm::fillResidents()
+void contractForm::fillFlats()
 {
-    if(addingNew) return;
-
-    //QMapIterator<int,QString> person(_contract->getResidentsName());
+    if(cmbFlat->count()>0) cmbFlat->clear();
+    QMapIterator<int,QString> flat(db->getFlatsName());
+    while(flat.hasNext()){
+        flat.next();
+        cmbFlat->addItem(flat.value(),flat.key());
+    }
 }
 
 void contractForm::on_cmbMainOwner_activated(int index)
@@ -226,6 +229,7 @@ void contractForm::on_submit()
                     edtValidTo->date(),
                     chkIsValid->isChecked(),
                     cmbMainOwner->currentData().toInt(),
+                    cmbFlat->currentData().toInt(),
                     residents);
         ownContract = true;
         accept();
@@ -234,6 +238,7 @@ void contractForm::on_submit()
         _contract->updFrom(edtValidFrom->date());
         _contract->updTo(edtValidTo->date());
         _contract->updValid(chkIsValid->isChecked());
+        _contract->updFlatId(cmbFlat->currentData().toInt());
         _contract->updOwnerId(cmbMainOwner->currentData().toInt());
         _contract->updResidents(residents);
 

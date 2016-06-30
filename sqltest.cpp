@@ -26,12 +26,19 @@ void sqlTest::connect()
 
     // Fill test database
     QSqlQuery q(db);
-    q.exec("create table Contracts (rowid integer primary key, Code varchar unique not null, Validf date, Validt date, Active boolean, Owner integer, Archived boolean)");
+
+    q.exec("create table Flats (rowid integer primary key, Code varchar unique not null, VM integer, CM integer, EcM integer)");
+    q.exec("insert into Flats values (1, 'Byt 1', 4, 1, 2)");
+    q.exec("insert into Flats values (2, 'Byt 2', 2, 4, 3)");
+    q.exec("insert into Flats values (3, 'Byt 3', 1, 3, 4)");
+    q.exec("insert into Flats values (4, 'Byt 4', 3, 2, 1)");
+
+    q.exec("create table Contracts (rowid integer primary key, Code varchar unique not null, Validf date, Validt date, Active boolean, Owner integer, Flat integer, Archived boolean)");
     //q.exec("create table Contracts (Code varchar unique not null, Validf date, Validt date, Active boolean, Owner integer)");
-    q.exec("insert into Contracts values (1, '2014/01', '2014-09-01', '2015-05-31', 0, 1, 0)");
-    q.exec("insert into Contracts values (2, '2014/02', '2014-10-01', '2015-05-31', 0, 2, 0)");
-    q.exec("insert into Contracts values (3, '2015/01', '2015-10-01', '2016-05-31', 1, 2, 0)");
-    q.exec("insert into Contracts values (4, '2015/02', '2015-11-01', '2016-10-31', 1, 6, 0)");
+    q.exec("insert into Contracts values (1, '2014/01', '2014-09-01', '2015-05-31', 0, 1, 1, 0)");
+    q.exec("insert into Contracts values (2, '2014/02', '2014-10-01', '2015-05-31', 0, 2, 2, 0)");
+    q.exec("insert into Contracts values (3, '2015/01', '2015-10-01', '2016-05-31', 1, 2, 2, 0)");
+    q.exec("insert into Contracts values (4, '2015/02', '2015-11-01', '2016-10-31', 1, 6, 4, 0)");
 
     q.exec("create table Persons (rowid integer primary key, Name varchar, Surname varchar, BirthDate date, Address text, Email varchar, Phone varchar, Bank varchar, Archived boolean)");
     q.exec("insert into Persons values (1,'Gustav', 'Mogg', '1989-09-21', '212 Front Street, Centreville, VA 20120', 'g.mogg@email.abc', '+420123456789', '123456789/0987', 0)");
@@ -51,6 +58,20 @@ void sqlTest::connect()
     q.exec("insert into ContractsPersons values (3, 4, 0, 1513)");
     q.exec("insert into ContractsPersons values (4, 6, 1, 152)");
     q.exec("insert into ContractsPersons values (4, 5, 0, 152)");
+
+    q.exec("create table Energy (Datum Date, WM0 integer, WM1 integer, WM2 integer, WM3 integer, WM4 integer, WMS integer, "
+           "Gas integer, CM1 integer, CM2 integer, CM3 integer, CM4 integer, "
+           "VT1 integer, NT1 integer, VT2 integer, NT2 integer, VT3 integer, NT3 integer, VT4 integer, NT4 integer)");
+    q.exec("INSERT INTO `Energy` VALUES ('2015-09-01','3','76','64','65','118','140','5334','19001','6579','7621','9376','822','1056','2761','3721','520','2726','1381','2312')");
+    q.exec("INSERT INTO `Energy` VALUES ('2015-09-28','3','88','67','70','126','167','5366','19030','6579','7759','9399','860','1177','2843','3901','543','2859','1544','2520')");
+    q.exec("INSERT INTO `Energy` VALUES ('2015-10-31','3','97','72','77','135','197','5702','19118','7242','8664','9815','898','1385','2934','4134','576','3060','1664','2790')");
+    q.exec("INSERT INTO `Energy` VALUES ('2015-11-29','3','105','77','84','143','223','6059','20726','7752','9437','10419','936','1596','3037','4350','612','3243','1827','3025')");
+    q.exec("INSERT INTO `Energy` VALUES ('2015-12-31','3','116','81','90','150','251','6520','22200','8404','10450','11064','982','1775','3128','4557','648','3429','1995','3317')");
+    q.exec("INSERT INTO `Energy` VALUES ('2016-02-07','3','125','87','99','159','283','7377','24938','9873','11860','12517','1085','2034','3282','4851','694','3690','2170','3648')");
+    q.exec("INSERT INTO `Energy` VALUES ('2016-03-03','3','131','91','104','165','303','7803','26327','10427','12408','13456','1158','2152','3383','5037','727','3861','2267','3865')");
+    q.exec("INSERT INTO `Energy` VALUES ('2016-03-27','3','136','94','109','171','325','8190','27537','10981','13012','14186','1235','2306','3475','5203','758','4010','2352','4075')");
+    q.exec("INSERT INTO `Energy` VALUES ('2016-05-07','3','146','106','120','181','371','8556','28136','11537','13365','14908','1325','2592','3615','5510','814','4324','2487','4378')");
+
 }
 
 QAbstractItemModel *sqlTest::getContractsModel(bool active)
@@ -170,13 +191,13 @@ void sqlTest::updatePerson(Person *p, bool name, bool surname, bool bdate, bool 
 
         q.prepare("update Persons set "+set.join(",")+" where rowid=:id");
         q.bindValue(":id",      p->getRowId());
-        q.bindValue(":name",    p->getName());
-        q.bindValue(":surname", p->getSurname());
-        q.bindValue(":bdate",   p->getBirthDate());
-        q.bindValue(":addr",    p->getAddress());
-        q.bindValue(":email",   p->getEmail());
-        q.bindValue(":phone",   p->getPhone());
-        q.bindValue(":bank",    p->getBank());
+        if(name)    q.bindValue(":name",    p->getName());
+        if(surname) q.bindValue(":surname", p->getSurname());
+        if(bdate)   q.bindValue(":bdate",   p->getBirthDate());
+        if(address) q.bindValue(":addr",    p->getAddress());
+        if(email)   q.bindValue(":email",   p->getEmail());
+        if(phone)   q.bindValue(":phone",   p->getPhone());
+        if(bank)    q.bindValue(":bank",    p->getBank());
         q.exec();
     }
 }
@@ -184,13 +205,14 @@ void sqlTest::updatePerson(Person *p, bool name, bool surname, bool bdate, bool 
 int sqlTest::insertIntoContracts(Contract *c)
 {
     QSqlQuery q(db);
-    q.prepare("insert into Contracts (Code,Validf,Validt,Active,Owner)"
-              "values (:code,:vfrom,:vto,:valid,:own)");
+    q.prepare("insert into Contracts (Code,Validf,Validt,Active,Owner,Flat,Archived)"
+              "values (:code,:vfrom,:vto,:valid,:own,:flat,0)");
     q.bindValue(":code",  c->getCode());
     q.bindValue(":vfrom", c->getFrom());
     q.bindValue(":vto",   c->getTo());
     q.bindValue(":valid", c->isValid());
     q.bindValue(":own",   c->getOwnerId());
+    q.bindValue(":flat",  c->getFlatId());
     q.exec();
 
     if(q.numRowsAffected() <1){
@@ -216,7 +238,7 @@ int sqlTest::insertIntoContracts(Contract *c)
 void sqlTest::selectFromContracts(Contract *c)
 {
     QSqlQuery q(db);
-    q.prepare("select Code,Validf,Validt,Active,Owner from Contracts where rowid=:id");
+    q.prepare("select Code,Validf,Validt,Active,Owner,Flat from Contracts where rowid=:id");
     q.bindValue(":id",c->getRowId());
     q.exec();
 
@@ -226,6 +248,7 @@ void sqlTest::selectFromContracts(Contract *c)
         c->setTo(q.value("Validt").toDate());
         c->setValid(q.value("Active").toBool());
         c->setOwnerId(q.value("Owner").toInt());
+        c->setFlatId(q.value("Flat").toInt());
 
         // load residents
         QList<int> residents;
@@ -241,7 +264,7 @@ void sqlTest::selectFromContracts(Contract *c)
     }
 }
 
-void sqlTest::updateContract(Contract *c, bool code, bool from, bool to, bool valid, bool ownId, QList<int> &add, QList<int> &remove)
+void sqlTest::updateContract(Contract *c, bool code, bool from, bool to, bool valid, bool ownId, bool flatId, QList<int> &add, QList<int> &remove)
 {
     if(code || from || to || valid || ownId){
         QSqlQuery q(db);
@@ -252,14 +275,16 @@ void sqlTest::updateContract(Contract *c, bool code, bool from, bool to, bool va
         if(to) set << "Validt=:vto";
         if(valid) set << "Active=:valid";
         if(ownId) set << "Owner=:own";
+        if(flatId) set << "Flat=:flat";
 
         q.prepare("update Contracts set "+set.join(",")+" where rowid=:id");
-        q.bindValue(":id",c->getRowId());
-        q.bindValue(":code",  c->getCode());
-        q.bindValue(":vfrom", c->getFrom());
-        q.bindValue(":vto",   c->getTo());
-        q.bindValue(":valid", c->isValid());
-        q.bindValue(":own",   c->getOwnerId());
+        q.bindValue(":id",    c->getRowId());
+        if(code)    q.bindValue(":code",  c->getCode());
+        if(from)    q.bindValue(":vfrom", c->getFrom());
+        if(to)      q.bindValue(":vto",   c->getTo());
+        if(valid)   q.bindValue(":valid", c->isValid());
+        if(ownId)   q.bindValue(":own",   c->getOwnerId());
+        if(flatId)  q.bindValue(":flat",  c->getFlatId());
         q.exec();
     }
     if(!add.isEmpty()){
@@ -289,6 +314,18 @@ QMap<int, QString> sqlTest::getPersonsName()
     QSqlQuery q(db);
     QMap<int,QString> m;
     q.exec("select rowid, Name || ' ' || Surname from Persons");
+    while(q.next()){
+        m.insert(q.value(0).toInt(),q.value(1).toString());
+    }
+    //qDebug() << q.lastError().text() << endl;
+    return m;
+}
+
+QMap<int, QString> sqlTest::getFlatsName()
+{
+    QSqlQuery q(db);
+    QMap<int,QString> m;
+    q.exec("select rowid, Code from Flats");
     while(q.next()){
         m.insert(q.value(0).toInt(),q.value(1).toString());
     }

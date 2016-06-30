@@ -26,6 +26,8 @@ class contractForm : public QDialog
     QLabel *lblValidTo;
     QDateEdit *edtValidTo;
     QCheckBox *chkIsValid;
+    QLabel *lblFlat;
+    QComboBox *cmbFlat;
     QLabel *lblMainOwner;
     QComboBox *cmbMainOwner;
     QLabel *lblResidents;
@@ -41,7 +43,7 @@ class contractForm : public QDialog
     void fillForm();
     void createNewPerson();
     void fillPersons();
-    void fillResidents();
+    void fillFlats();
     bool addingNew;
     sqlI *db;
     Contract *_contract;

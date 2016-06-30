@@ -18,6 +18,7 @@ class Contract
     QDate vTo;
     bool valid;
     int ownerId;
+    int flatId;
     QList<int> residents;
 
     Person *owner;
@@ -26,7 +27,7 @@ class Contract
 
     void save();
 
-    bool chCode, chFrom, chTo, chValid, chOwnerId;
+    bool chCode, chFrom, chTo, chValid, chOwnerId, chFlatId;
     QList<int> newResidents;
     QList<int> removeResidents;
 
@@ -40,6 +41,7 @@ public:
             const QDate &vto,
             bool valid,
             int ownId,
+            int flatId,
             const QList<int> &residents);
 
     // getry
@@ -50,6 +52,7 @@ public:
     bool isValid()const{return valid;}
     Person *getOwner()const;
     int getOwnerId()const{return ownerId;}
+    int getFlatId()const{return flatId;}
     QList<Person> getResidents();
     QList<int> getResidentsIDs()const{return residents;}
 
@@ -59,6 +62,7 @@ public:
     void setTo(QDate d){vTo=d;}
     void setValid(bool b){valid=b;}
     void setOwnerId(int i){ownerId=i;}
+    void setFlatId(int i){flatId=i;}
     void addResidents(QList<int> &l){residents.append(l);}
 
     // update
@@ -67,6 +71,7 @@ public:
     void updTo(QDate);
     void updValid(bool);
     void updOwnerId(int);
+    void updFlatId(int);
     void updResidents(QList<int> &);
     void update();
 };

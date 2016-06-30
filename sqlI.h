@@ -23,12 +23,13 @@ public:
     virtual QAbstractItemModel *getPersonsModel(bool) = 0;
     virtual QMap<int, QString> getPersonsName() = 0;
     //virtual QMap<int, QString> getResidentsName(int) = 0;
+    virtual QMap<int, QString> getFlatsName() = 0;
     virtual int insertIntoPersons(Person *) = 0;
     virtual void selectFromPersons(Person *) = 0;
     virtual void updatePerson(Person *,bool,bool,bool,bool,bool,bool,bool) = 0;
     virtual int insertIntoContracts(Contract *) = 0;
     virtual void selectFromContracts(Contract *) = 0;
-    virtual void updateContract(Contract *,bool,bool,bool,bool,bool,QList<int> &,QList<int> &) = 0;
+    virtual void updateContract(Contract *,bool,bool,bool,bool,bool,bool,QList<int> &,QList<int> &) = 0;
     virtual void disconnect() = 0;
 
     bool isConnected() {return connected;}
