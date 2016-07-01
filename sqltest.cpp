@@ -139,7 +139,7 @@ QAbstractItemModel *sqlTest::getEnergyModel(int i)
     QSqlQueryModel *model = new QSqlQueryModel(this);
     //QString Where("");
     QStringList l;
-    l << "rowid","Datum";
+    l << "rowid" << "Datum";
     switch(i){
     case 0:
         l<< "WM0" << "WM1" << "WM2" << "WM3" << "WM4" << "WMS" ;

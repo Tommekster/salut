@@ -16,7 +16,7 @@ protected:
     bool connected;
 
 public:
-    explicit sqlI(QObject *parent = 0):QObject(parent){}
+    explicit sqlI(QObject *parent = 0):QObject(parent),connected(false){}
     virtual void connect() = 0;
     //virtual void query() = 0;
     virtual QAbstractItemModel *getContractsModel(bool) = 0;

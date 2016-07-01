@@ -52,13 +52,13 @@ MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
+    loadConfiguration();
+    dbConnect();
+
     ui->setupUi(this);
     ui->comboBox_2->addItem(tr("Water"));
     ui->comboBox_2->addItem(tr("Heating"));
     ui->comboBox_2->addItem(tr("Electricity"));
-
-    loadConfiguration();
-    dbConnect();
 
     loadContracts();
 
