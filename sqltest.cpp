@@ -134,6 +134,50 @@ QAbstractItemModel *sqlTest::getPersonsModel(bool active)
     return model;
 }
 
+QAbstractItemModel *sqlTest::getEnergyModel(int i)
+{
+    QSqlQueryModel *model = new QSqlQueryModel(this);
+    //QString Where("");
+    QStringList l;
+    l << "rowid","Datum";
+    switch(i){
+    case 0:
+        l<< "WM0" << "WM1" << "WM2" << "WM3" << "WM4" << "WMS" ;
+        break;
+    case 1:
+        l<< "Gas" << "CM1" << "CM2" << "CM3" << "CM4";
+        break;
+    case 2:
+        l<< "VT1" << "NT1" << "VT2" << "NT2" << "VT3" << "NT3" << "VT4" << "NT4";
+        break;
+    default:
+        break;
+    }
+
+    model->setQuery("select "+l.join(",")+" from Energy",db);
+
+    // Zahlavi
+    // 0 ... header rowid ... will be hidden
+    model->setHeaderData(1,Qt::Horizontal,tr("Date"));
+    /*switch(i){
+    case 0:
+        break;
+    case 1:
+        break;
+    case 2:
+        break;
+    default:
+        break;
+    }*/
+
+    if(model->lastError().type() != QSqlError::NoError){
+        qDebug() << "Mam chybu v modelu: " << model->lastError().text();
+        return NULL; // TODO
+    }
+
+    return model;
+}
+
 int sqlTest::insertIntoPersons(Person *p)
 {
     QSqlQuery q(db);

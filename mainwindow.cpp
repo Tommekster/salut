@@ -53,6 +53,9 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    ui->comboBox_2->addItem(tr("Water"));
+    ui->comboBox_2->addItem(tr("Heating"));
+    ui->comboBox_2->addItem(tr("Electricity"));
 
     loadConfiguration();
     dbConnect();
@@ -99,6 +102,19 @@ void MainWindow::loadPersons()
     ui->tableView_2->setEditTriggers(QAbstractItemView::NoEditTriggers);
 }
 
+void MainWindow::loadEnergy()
+{
+    if(!db->isConnected()) {
+        qDebug() << "Koncim, protoze DB neni otevrena.\n";
+        return;
+    }
+
+    ui->tableView_3->setModel(db->getEnergyModel(ui->comboBox_2->currentIndex()));
+    ui->tableView_3->setColumnHidden(0,true);
+    //ui->tableView_3->setColumnWidth(1,120);
+    ui->tableView_3->setEditTriggers(QAbstractItemView::NoEditTriggers);
+}
+
 void MainWindow::testFn()
 {
     qDebug() << "delam testFn";
@@ -132,6 +148,9 @@ void MainWindow::on_tabWidget_currentChanged(int tab)
     case 1: // Persons
         loadPersons();
         break;
+    case 3: // Energy
+        loadEnergy();
+        break;
     default:
         break;
     }
@@ -159,4 +178,9 @@ void MainWindow::on_tableView_2_doubleClicked(const QModelIndex &index)
     personForm f(db,p,this);
     int r=f.exec();
     if(r==f.Accepted) loadPersons();
+}
+
+void MainWindow::on_comboBox_2_currentIndexChanged(int index)
+{
+    loadEnergy();
 }

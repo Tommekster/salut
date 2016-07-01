@@ -21,6 +21,7 @@ public:
     //virtual void query() = 0;
     virtual QAbstractItemModel *getContractsModel(bool) = 0;
     virtual QAbstractItemModel *getPersonsModel(bool) = 0;
+    virtual QAbstractItemModel *getEnergyModel(int) = 0;
     virtual QMap<int, QString> getPersonsName() = 0;
     //virtual QMap<int, QString> getResidentsName(int) = 0;
     virtual QMap<int, QString> getFlatsName() = 0;
