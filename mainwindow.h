@@ -27,6 +27,7 @@ private slots:
     void loadContracts();
     void loadPersons();
     void loadEnergy();
+    void loadEnergy(int);
     void testFn();
 
     void on_tableView_doubleClicked(const QModelIndex &index);

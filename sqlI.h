@@ -7,6 +7,7 @@
 class QAbstractItemModel;
 class Person;
 class Contract;
+class EnergyRecord;
 
 class sqlI : public QObject
 {
@@ -31,6 +32,7 @@ public:
     virtual int insertIntoContracts(Contract *) = 0;
     virtual void selectFromContracts(Contract *) = 0;
     virtual void updateContract(Contract *,bool,bool,bool,bool,bool,bool,QList<int> &,QList<int> &) = 0;
+    virtual void insertIntoEnergy(EnergyRecord *) = 0;
     virtual void disconnect() = 0;
 
     bool isConnected() {return connected;}

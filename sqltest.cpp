@@ -9,6 +9,7 @@
 
 #include "person.h"
 #include "contract.h"
+#include "energyrecord.h"
 
 void sqlTest::connect()
 {
@@ -351,6 +352,48 @@ void sqlTest::updateContract(Contract *c, bool code, bool from, bool to, bool va
             q.exec();
         }
     }
+}
+
+int sqlTest::insertIntoEnergy(EnergyRecord *r)
+{
+    QSqlQuery q(db);
+    q.prepare("insert into Energy (Datum, WM0, WM1, WM2, WM3, WM4, WMS, "
+              "Gas, CM1, CM2, CM3, CM4, VT1, NT1, VT2, NT2, VT3, NT3, VT4, NT4) values "
+              "(:datum,:wm0,:wm1,:wm2,:wm3,:wm4,:wms,:gs,:cm1,:cm2,:cm3,:cm4,"
+              ":vt1,:nt1,:vt2,:nt2,:vt3,:nt3,:vt4,:nt4)");
+
+    q.bindValue(":datum",r->getDatum());
+
+    QList<unsigned int> hydrometers = r->getHydrometers();
+    if(hydrometers.length()<6) return -2;
+    q.bindValue(":wm0",hydrometers.at(0));
+    q.bindValue(":wm1",hydrometers.at(1));
+    q.bindValue(":wm2",hydrometers.at(2));
+    q.bindValue(":wm3",hydrometers.at(3));
+    q.bindValue(":wm4",hydrometers.at(4));
+    q.bindValue(":wms",hydrometers.at(5));
+
+    QList<unsigned int> calorimeters = r->getCalorimeters();
+    if(calorimeters.length()<4) return -3;
+    q.bindValue(":gs",r->getGasometerValue());
+    q.bindValue(":cm1",hydrometers.at(0));
+    q.bindValue(":cm2",hydrometers.at(1));
+    q.bindValue(":cm3",hydrometers.at(2));
+    q.bindValue(":cm4",hydrometers.at(3));
+
+    QLine<EnergyRecord::EletricityMeter> eletricity_meters = r->getEletricityMeters();
+    if(eletricity_meters.length()<4) return -4;
+    q.bindValue(":vt1",eletricity_meters.at(0).vt);
+    q.bindValue(":nt1",eletricity_meters.at(0).nt);
+    q.bindValue(":vt2",eletricity_meters.at(1).vt);
+    q.bindValue(":nt2",eletricity_meters.at(1).nt);
+    q.bindValue(":vt3",eletricity_meters.at(2).vt);
+    q.bindValue(":nt3",eletricity_meters.at(2).nt);
+    q.bindValue(":vt4",eletricity_meters.at(3).vt);
+    q.bindValue(":nt4",eletricity_meters.at(3).nt);
+
+
+    q.exec();
 }
 
 QMap<int, QString> sqlTest::getPersonsName()

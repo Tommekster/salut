@@ -20,7 +20,9 @@ SOURCES += main.cpp\
     contractform.cpp \
     contract.cpp \
     person.cpp \
-    personform.cpp
+    personform.cpp \
+    energyform.cpp \
+    energyrecord.cpp
 
 HEADERS  += mainwindow.h \
     sqlI.h \
@@ -30,6 +32,9 @@ HEADERS  += mainwindow.h \
     contractform.h \
     contract.h \
     person.h \
-    personform.h
+    personform.h \
+    energyform.h \
+    energyrecord.h
 
-FORMS    += mainwindow.ui
+FORMS    += mainwindow.ui \
+    energyform.ui

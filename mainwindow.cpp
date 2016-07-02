@@ -104,12 +104,17 @@ void MainWindow::loadPersons()
 
 void MainWindow::loadEnergy()
 {
+    loadEnergy(ui->comboBox_2->currentIndex());
+}
+
+void MainWindow::loadEnergy(int type)
+{
     if(!db->isConnected()) {
         qDebug() << "Koncim, protoze DB neni otevrena.\n";
         return;
     }
 
-    ui->tableView_3->setModel(db->getEnergyModel(ui->comboBox_2->currentIndex()));
+    ui->tableView_3->setModel(db->getEnergyModel(type));
     ui->tableView_3->setColumnHidden(0,true);
     //ui->tableView_3->setColumnWidth(1,120);
     ui->tableView_3->setEditTriggers(QAbstractItemView::NoEditTriggers);
@@ -182,5 +187,5 @@ void MainWindow::on_tableView_2_doubleClicked(const QModelIndex &index)
 
 void MainWindow::on_comboBox_2_currentIndexChanged(int index)
 {
-    loadEnergy();
+    loadEnergy(index);
 }
