@@ -41,6 +41,7 @@ Contract *Contract::createContract(sqlI *db,
     c->vTo=vto;
     c->valid=valid;
     c->ownerId=ownId;
+    c->flatId=flatId;
     c->residents=residents;
     c->save();
 

@@ -54,8 +54,10 @@ void contractForm::createForm()
     edtCode = new QLineEdit(d.toString("yyyy/MM"),this);
     lblValidFrom = new QLabel(tr("Valid from"),this);
     edtValidFrom = new QDateEdit(QDate::currentDate(),this);
+    edtValidFrom->setCalendarPopup(true);
     lblValidTo = new QLabel(tr("Valid to"),this);
     edtValidTo = new QDateEdit(QDate::currentDate(),this);
+    edtValidTo->setCalendarPopup(true);
     chkIsValid = new QCheckBox(tr("Contract is active"),this);
     chkIsValid->setChecked(true);
     lblFlat = new QLabel(tr("Flat"),this);

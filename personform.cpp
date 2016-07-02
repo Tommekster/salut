@@ -18,6 +18,7 @@ void personForm::createForm()
     edtSurname = new QLineEdit(this);
     lblBirthDate = new QLabel(tr("Birth Date"),this);
     edtBirthDate = new QDateEdit(this);
+    edtBirthDate->setCalendarPopup(true);
     lblAddress = new QLabel(tr("Address"));
     edtAddress = new QTextEdit(this);
     lblEmail = new QLabel(tr("Email"),this);

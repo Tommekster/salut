@@ -7,6 +7,7 @@
 #include <QDebug>
 #include <QSettings>
 #include <QFileDialog>
+#include <QMessageBox>
 #include "sqlI.h"
 #include "sqltest.h"
 #include "mainwindow.h"
@@ -16,6 +17,7 @@
 #include "personform.h"
 #include "person.h"
 #include "energyform.h"
+#include "energyrecord.h"
 
 void MainWindow::loadConfiguration()
 {
@@ -47,6 +49,13 @@ void MainWindow::dbConnect()
 {
     db = new sqlTest(this);
     db->connect();
+}
+
+int MainWindow::modelIndex2rowId(const QModelIndex &index)
+{
+    const QAbstractItemModel *m = index.model();
+    int rowid=m->data(index.sibling(index.row(),0)).toInt();
+    return rowid;
 }
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -136,9 +145,7 @@ void MainWindow::testFn()
 
 void MainWindow::on_tableView_doubleClicked(const QModelIndex &index)
 {
-    const QAbstractItemModel *m = index.model();
-    //qDebug()<< "Rowid" << m->data(index.sibling(index.row(),0)).toString();
-    int rowid=m->data(index.sibling(index.row(),0)).toInt();
+    int rowid=modelIndex2rowId(index);
     Contract *c=new Contract(db,rowid);
     contractForm f(db,c,this);
     int r=f.exec();
@@ -178,8 +185,7 @@ void MainWindow::on_btnAddPerson_clicked()
 
 void MainWindow::on_tableView_2_doubleClicked(const QModelIndex &index)
 {
-    const QAbstractItemModel *m = index.model();
-    int rowid=m->data(index.sibling(index.row(),0)).toInt();
+    int rowid=modelIndex2rowId(index);
     Person *p=new Person(db,rowid);
     personForm f(db,p,this);
     int r=f.exec();
@@ -196,4 +202,23 @@ void MainWindow::on_btnAddEnergy_clicked()
     energyForm form(db,this);
     int res=form.exec();
     if(res==form.Accepted) loadEnergy();
+}
+
+void MainWindow::on_tableView_3_doubleClicked(const QModelIndex &index)
+{
+    int rowid=modelIndex2rowId(index);
+    EnergyRecord *r=new EnergyRecord(db,rowid);
+    energyForm f(db,r,this);
+    int res=f.exec();
+    if(res==f.Accepted) loadEnergy();
+}
+
+void MainWindow::on_btnDeleteEnergy_clicked()
+{
+    int ret = QMessageBox::question(this,tr("Delete energy record"),tr("Do you want to delete selected energy record?"));
+    if(ret == QMessageBox::Yes){
+        int rowid=modelIndex2rowId(ui->tableView_3->currentIndex());
+        EnergyRecord::remove(db,rowid);
+        loadEnergy();
+    }
 }

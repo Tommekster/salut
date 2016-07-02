@@ -15,6 +15,8 @@ public:
         :sqlI(parent), db(QSqlDatabase::addDatabase("QSQLITE","in_mem_db")){}
     ~sqlTest(){if(connected) disconnect();}
 
+    void fillEnergyRecord(QSqlQuery &,EnergyRecord *);
+
     // sqlI interface
 public:
     virtual void connect();
@@ -33,6 +35,9 @@ public:
     virtual void updateContract(Contract *,bool,bool,bool,bool,bool,bool,QList<int> &,QList<int> &);
     virtual int insertIntoEnergy(EnergyRecord *);
     virtual void lastEnergyRecord(EnergyRecord *);
+    virtual void selectFromEnergy(EnergyRecord *);
+    virtual void deleteEnergyRecord(EnergyRecord *);
+    virtual void updateEnergy(EnergyRecord *,bool,bool,bool,bool,bool);
     virtual void disconnect();
 };
 

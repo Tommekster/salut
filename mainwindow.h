@@ -19,6 +19,8 @@ class MainWindow : public QMainWindow
     void loadConfiguration();
     void dbConnect();
 
+    int modelIndex2rowId(const QModelIndex &);
+
 public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
@@ -42,6 +44,10 @@ private slots:
     void on_comboBox_2_currentIndexChanged(int index);
 
     void on_btnAddEnergy_clicked();
+
+    void on_tableView_3_doubleClicked(const QModelIndex &index);
+
+    void on_btnDeleteEnergy_clicked();
 
 private:
     Ui::MainWindow *ui;

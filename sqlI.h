@@ -34,6 +34,9 @@ public:
     virtual void updateContract(Contract *,bool,bool,bool,bool,bool,bool,QList<int> &,QList<int> &) = 0;
     virtual int insertIntoEnergy(EnergyRecord *) = 0;
     virtual void lastEnergyRecord(EnergyRecord *) = 0;
+    virtual void selectFromEnergy(EnergyRecord *) = 0;
+    virtual void deleteEnergyRecord(EnergyRecord *) = 0;
+    virtual void updateEnergy(EnergyRecord *,bool,bool,bool,bool,bool) = 0;
     virtual void disconnect() = 0;
 
     bool isConnected() {return connected;}

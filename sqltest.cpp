@@ -393,16 +393,16 @@ int sqlTest::insertIntoEnergy(EnergyRecord *r)
     q.bindValue(":nt4",eletricity_meters.at(3).nt);
 
     q.exec();
+
+    if(q.numRowsAffected() <1){
+        qDebug() << "insertIntoPersons selhalo!";
+        return -1;
+    }else
+        return q.lastInsertId().toInt();
 }
 
-void sqlTest::lastEnergyRecord(EnergyRecord *r)
+void sqlTest::fillEnergyRecord(QSqlQuery &q, EnergyRecord *r)
 {
-    QSqlQuery q(db);
-    q.prepare("select Datum, WM0, WM1, WM2, WM3, WM4, WMS, "
-              "Gas, CM1, CM2, CM3, CM4, VT1, NT1, VT2, NT2, VT3, NT3, VT4, NT4 "
-              "from Energy order by Datum desc");
-    q.exec();
-
     if(q.first()){
         r->setDatum(q.value("Datum").toDate());
 
@@ -430,8 +430,103 @@ void sqlTest::lastEnergyRecord(EnergyRecord *r)
                           << EnergyRecord::EletricityMeter(q.value("VT4").toInt(),q.value("NT4").toInt());
         r->setEletricityMeters(eletricity_meters);
     }else{
-        qDebug() << "lastEnergyRecord: Zaznam nebyl nalezen!";
+        qDebug() << "fillEnergyRecord: Zaznam nebyl nalezen!";
     }
+}
+
+void sqlTest::lastEnergyRecord(EnergyRecord *r)
+{
+    QSqlQuery q(db);
+    q.prepare("select Datum, WM0, WM1, WM2, WM3, WM4, WMS, "
+              "Gas, CM1, CM2, CM3, CM4, VT1, NT1, VT2, NT2, VT3, NT3, VT4, NT4 "
+              "from Energy order by Datum desc limit 1");
+    q.exec();
+    fillEnergyRecord(q,r);
+}
+
+void sqlTest::selectFromEnergy(EnergyRecord *r)
+{
+    QSqlQuery q(db);
+    q.prepare("select Datum, WM0, WM1, WM2, WM3, WM4, WMS, "
+              "Gas, CM1, CM2, CM3, CM4, VT1, NT1, VT2, NT2, VT3, NT3, VT4, NT4 "
+              "from Energy where rowid=:rowid");
+    q.bindValue(":rowid",r->getRowId());
+    q.exec();
+    fillEnergyRecord(q,r);
+}
+
+void sqlTest::deleteEnergyRecord(EnergyRecord *r)
+{
+    QSqlQuery q(db);
+    q.prepare("delete from Energy where rowid=:rowid");
+    q.bindValue(":rowid",r->getRowId());
+    q.exec();
+}
+
+void sqlTest::updateEnergy(EnergyRecord *r, bool datum, bool hm, bool cm, bool gas, bool elm)
+{
+    QSqlQuery q(db);
+    QStringList set;
+
+    if(datum) set << "Datum=:datum";
+    if(hm){
+        set << "WM0=:wm0"
+            << "WM1=:wm1"
+            << "WM2=:wm2"
+            << "WM3=:wm3"
+            << "WM4=:wm4"
+            << "WMS=:wms";
+    }
+    if(cm){
+        set << "CM1=:cm1"
+            << "CM2=:cm2"
+            << "CM3=:cm3"
+            << "CM4=:cm4";
+    }
+    if(gas) set << "Gas=:gs";
+    if(elm){
+        set << "VT1=:vt1" << "NT1=:nt1"
+            << "VT2=:vt2" << "NT2=:nt2"
+            << "VT3=:vt3" << "NT3=:nt3"
+            << "VT4=:vt4" << "NT4=:nt4";
+    }
+
+    q.prepare("update Energy set "+set.join(",")+" where rowid=:id");
+    q.bindValue(":id",    r->getRowId());
+    if(datum) q.bindValue(":datum",r->getDatum());
+    if(hm){
+        QList<unsigned int> hydrometers = r->getHydrometers();
+        //if(hydrometers.length()<6) return -2;
+        q.bindValue(":wm0",hydrometers.at(0));
+        q.bindValue(":wm1",hydrometers.at(1));
+        q.bindValue(":wm2",hydrometers.at(2));
+        q.bindValue(":wm3",hydrometers.at(3));
+        q.bindValue(":wm4",hydrometers.at(4));
+        q.bindValue(":wms",hydrometers.at(5));
+    }
+    if(cm){
+        QList<unsigned int> calorimeters = r->getCalorimeters();
+        //if(calorimeters.length()<4) return;
+        q.bindValue(":cm1",calorimeters.at(0));
+        q.bindValue(":cm2",calorimeters.at(1));
+        q.bindValue(":cm3",calorimeters.at(2));
+        q.bindValue(":cm4",calorimeters.at(3));
+    }
+    if(gas)
+        q.bindValue(":gs",r->getGasometerValue());
+    if(elm){
+        QList<EnergyRecord::EletricityMeter> eletricity_meters = r->getEletricityMeters();
+        //if(eletricity_meters.length()<4) return;
+        q.bindValue(":vt1",eletricity_meters.at(0).vt);
+        q.bindValue(":nt1",eletricity_meters.at(0).nt);
+        q.bindValue(":vt2",eletricity_meters.at(1).vt);
+        q.bindValue(":nt2",eletricity_meters.at(1).nt);
+        q.bindValue(":vt3",eletricity_meters.at(2).vt);
+        q.bindValue(":nt3",eletricity_meters.at(2).nt);
+        q.bindValue(":vt4",eletricity_meters.at(3).vt);
+        q.bindValue(":nt4",eletricity_meters.at(3).nt);
+    }
+    q.exec();
 }
 
 QMap<int, QString> sqlTest::getPersonsName()

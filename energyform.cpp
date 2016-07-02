@@ -47,20 +47,25 @@ void energyForm::fillForm()
 
 energyForm::energyForm(sqlI *d,QWidget *parent) :
     QDialog(parent),db(d),
-    ui(new Ui::energyForm),
-    addingNew(true),ownRecord(false)
+    addingNew(true),ownRecord(false),
+    ui(new Ui::energyForm)
 {
     record=EnergyRecord::lastEnergyRecord(db);
     ui->setupUi(this);
+    setWindowTitle(tr("Add energy record"));
+    ui->buttonBox->setStandardButtons(QDialogButtonBox::Cancel);
+    ui->buttonBox->addButton(tr("Create"),QDialogButtonBox::AcceptRole);
     fillForm();
 }
 
 energyForm::energyForm(sqlI *d, EnergyRecord *r, QWidget *parent) :
     QDialog(parent),db(d),record(r),
-    ui(new Ui::energyForm),
-    addingNew(false),ownRecord(true)
+    addingNew(false),ownRecord(true),
+    ui(new Ui::energyForm)
 {
     ui->setupUi(this);
+    setWindowTitle(tr("Edit energy record"));
+    ui->buttonBox->setStandardButtons(QDialogButtonBox::Cancel | QDialogButtonBox::Save);
     fillForm();
 }
 
@@ -99,5 +104,7 @@ void energyForm::on_buttonBox_accepted()
                                                       ui->gas->value(),
                                                       eletricity_meters);
         ownRecord=true;
+    }else{
+        record->update();
     }
 }
