@@ -8,6 +8,14 @@ class sqlI;
 
 class EnergyRecord
 {
+public:
+    struct EletricityMeter {
+        unsigned int vt;
+        unsigned int nt;
+        EletricityMeter(unsigned int v, unsigned int n):vt(v),nt(n){}
+    };
+
+private:
     sqlI *db;
 
     int rowid;
@@ -15,7 +23,7 @@ class EnergyRecord
     QList<unsigned int> hydrometers;
     QList<unsigned int> calorimeters;
     unsigned int gasometer;
-    QList<EletricityMeter> eletricity_meters;
+    QList<EnergyRecord::EletricityMeter> eletricity_meters;
 
     bool isNew;
 
@@ -25,11 +33,6 @@ public:
     EnergyRecord(sqlI *_db);
     EnergyRecord(sqlI *_db,int);
 
-    struct EletricityMeter {
-        unsigned int VT;
-        unsigned int NT;
-    };
-
     static EnergyRecord *createEnergyRecord(sqlI *db,
                                             QDate datum,
                                             QList<unsigned int> hydrometers,
@@ -37,7 +40,7 @@ public:
                                             unsigned int gasometer,
                                             QList<EletricityMeter> eletricity_meters);
 
-    //static EnergyRecord *last
+    static EnergyRecord *lastEnergyRecord(sqlI *db);
 
     // gettry
     QDate getDatum()const{return datum;}

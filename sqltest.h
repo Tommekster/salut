@@ -31,6 +31,8 @@ public:
     virtual int insertIntoContracts(Contract *);
     virtual void selectFromContracts(Contract *);
     virtual void updateContract(Contract *,bool,bool,bool,bool,bool,bool,QList<int> &,QList<int> &);
+    virtual int insertIntoEnergy(EnergyRecord *);
+    virtual void lastEnergyRecord(EnergyRecord *);
     virtual void disconnect();
 };
 

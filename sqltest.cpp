@@ -376,12 +376,12 @@ int sqlTest::insertIntoEnergy(EnergyRecord *r)
     QList<unsigned int> calorimeters = r->getCalorimeters();
     if(calorimeters.length()<4) return -3;
     q.bindValue(":gs",r->getGasometerValue());
-    q.bindValue(":cm1",hydrometers.at(0));
-    q.bindValue(":cm2",hydrometers.at(1));
-    q.bindValue(":cm3",hydrometers.at(2));
-    q.bindValue(":cm4",hydrometers.at(3));
+    q.bindValue(":cm1",calorimeters.at(0));
+    q.bindValue(":cm2",calorimeters.at(1));
+    q.bindValue(":cm3",calorimeters.at(2));
+    q.bindValue(":cm4",calorimeters.at(3));
 
-    QLine<EnergyRecord::EletricityMeter> eletricity_meters = r->getEletricityMeters();
+    QList<EnergyRecord::EletricityMeter> eletricity_meters = r->getEletricityMeters();
     if(eletricity_meters.length()<4) return -4;
     q.bindValue(":vt1",eletricity_meters.at(0).vt);
     q.bindValue(":nt1",eletricity_meters.at(0).nt);
@@ -392,8 +392,46 @@ int sqlTest::insertIntoEnergy(EnergyRecord *r)
     q.bindValue(":vt4",eletricity_meters.at(3).vt);
     q.bindValue(":nt4",eletricity_meters.at(3).nt);
 
-
     q.exec();
+}
+
+void sqlTest::lastEnergyRecord(EnergyRecord *r)
+{
+    QSqlQuery q(db);
+    q.prepare("select Datum, WM0, WM1, WM2, WM3, WM4, WMS, "
+              "Gas, CM1, CM2, CM3, CM4, VT1, NT1, VT2, NT2, VT3, NT3, VT4, NT4 "
+              "from Energy order by Datum desc");
+    q.exec();
+
+    if(q.first()){
+        r->setDatum(q.value("Datum").toDate());
+
+        QList<unsigned int> hydrometers;
+        hydrometers << q.value("WM0").toInt()
+                    << q.value("WM1").toInt()
+                    << q.value("WM2").toInt()
+                    << q.value("WM3").toInt()
+                    << q.value("WM4").toInt()
+                    << q.value("WMS").toInt();
+        r->setHydrometers(hydrometers);
+
+        QList<unsigned int> calorimeters;
+        calorimeters << q.value("CM1").toInt()
+                     << q.value("CM2").toInt()
+                     << q.value("CM3").toInt()
+                     << q.value("CM4").toInt();
+        r->setCalorimeters(calorimeters);
+        r->setGasometerValue(q.value("Gas").toInt());
+
+        QList<EnergyRecord::EletricityMeter> eletricity_meters;
+        eletricity_meters << EnergyRecord::EletricityMeter(q.value("VT1").toInt(),q.value("NT1").toInt())
+                          << EnergyRecord::EletricityMeter(q.value("VT2").toInt(),q.value("NT2").toInt())
+                          << EnergyRecord::EletricityMeter(q.value("VT3").toInt(),q.value("NT3").toInt())
+                          << EnergyRecord::EletricityMeter(q.value("VT4").toInt(),q.value("NT4").toInt());
+        r->setEletricityMeters(eletricity_meters);
+    }else{
+        qDebug() << "lastEnergyRecord: Zaznam nebyl nalezen!";
+    }
 }
 
 QMap<int, QString> sqlTest::getPersonsName()

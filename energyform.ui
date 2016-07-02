@@ -22,7 +22,7 @@
         <string>4</string>
        </property>
        <property name="buddy">
-        <cstring>spinBox_5</cstring>
+        <cstring>wm4</cstring>
        </property>
       </widget>
      </item>
@@ -46,15 +46,23 @@
         <string>NT</string>
        </property>
        <property name="alignment">
-        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        <set>Qt::AlignCenter</set>
        </property>
       </widget>
      </item>
      <item row="10" column="2">
-      <widget class="QSpinBox" name="spinBox_14"/>
+      <widget class="QSpinBox" name="nt2">
+       <property name="maximum">
+        <number>99999</number>
+       </property>
+      </widget>
      </item>
      <item row="10" column="1">
-      <widget class="QSpinBox" name="spinBox_12"/>
+      <widget class="QSpinBox" name="nt1">
+       <property name="maximum">
+        <number>99999</number>
+       </property>
+      </widget>
      </item>
      <item row="2" column="0">
       <widget class="QLabel" name="label_5">
@@ -62,7 +70,7 @@
         <string>0</string>
        </property>
        <property name="buddy">
-        <cstring>spinBox</cstring>
+        <cstring>wm0</cstring>
        </property>
       </widget>
      </item>
@@ -72,12 +80,16 @@
         <string>4</string>
        </property>
        <property name="buddy">
-        <cstring>spinBox_9</cstring>
+        <cstring>cm4</cstring>
        </property>
       </widget>
      </item>
      <item row="9" column="1">
-      <widget class="QSpinBox" name="spinBox_11"/>
+      <widget class="QSpinBox" name="vt1">
+       <property name="maximum">
+        <number>99999</number>
+       </property>
+      </widget>
      </item>
      <item row="8" column="3">
       <widget class="QLabel" name="label_19">
@@ -87,19 +99,39 @@
       </widget>
      </item>
      <item row="6" column="2">
-      <widget class="QSpinBox" name="spinBox_8"/>
+      <widget class="QSpinBox" name="cm3">
+       <property name="maximum">
+        <number>999999</number>
+       </property>
+      </widget>
      </item>
      <item row="9" column="2">
-      <widget class="QSpinBox" name="spinBox_13"/>
+      <widget class="QSpinBox" name="vt2">
+       <property name="maximum">
+        <number>99999</number>
+       </property>
+      </widget>
      </item>
      <item row="6" column="1">
-      <widget class="QSpinBox" name="spinBox_7"/>
+      <widget class="QSpinBox" name="cm2">
+       <property name="maximum">
+        <number>999999</number>
+       </property>
+      </widget>
      </item>
      <item row="6" column="0">
-      <widget class="QSpinBox" name="spinBox_6"/>
+      <widget class="QSpinBox" name="cm1">
+       <property name="maximum">
+        <number>999999</number>
+       </property>
+      </widget>
      </item>
      <item row="9" column="4">
-      <widget class="QSpinBox" name="spinBox_17"/>
+      <widget class="QSpinBox" name="vt4">
+       <property name="maximum">
+        <number>99999</number>
+       </property>
+      </widget>
      </item>
      <item row="0" column="0" colspan="2">
       <widget class="QLabel" name="label">
@@ -109,7 +141,11 @@
       </widget>
      </item>
      <item row="6" column="3">
-      <widget class="QSpinBox" name="spinBox_9"/>
+      <widget class="QSpinBox" name="cm4">
+       <property name="maximum">
+        <number>999999</number>
+       </property>
+      </widget>
      </item>
      <item row="4" column="0" colspan="4">
       <widget class="QLabel" name="label_3">
@@ -130,7 +166,7 @@
         <string>2</string>
        </property>
        <property name="buddy">
-        <cstring>spinBox_3</cstring>
+        <cstring>wm2</cstring>
        </property>
       </widget>
      </item>
@@ -140,18 +176,30 @@
         <string>3</string>
        </property>
        <property name="buddy">
-        <cstring>spinBox_4</cstring>
+        <cstring>wm3</cstring>
        </property>
       </widget>
      </item>
      <item row="3" column="1">
-      <widget class="QSpinBox" name="spinBox_2"/>
+      <widget class="QSpinBox" name="wm1">
+       <property name="maximum">
+        <number>999</number>
+       </property>
+      </widget>
      </item>
      <item row="3" column="3">
-      <widget class="QSpinBox" name="spinBox_4"/>
+      <widget class="QSpinBox" name="wm3">
+       <property name="maximum">
+        <number>999</number>
+       </property>
+      </widget>
      </item>
      <item row="3" column="2">
-      <widget class="QSpinBox" name="spinBox_3"/>
+      <widget class="QSpinBox" name="wm2">
+       <property name="maximum">
+        <number>999</number>
+       </property>
+      </widget>
      </item>
      <item row="9" column="0">
       <widget class="QLabel" name="label_8">
@@ -159,12 +207,16 @@
         <string>VT</string>
        </property>
        <property name="alignment">
-        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        <set>Qt::AlignCenter</set>
        </property>
       </widget>
      </item>
      <item row="3" column="0">
-      <widget class="QSpinBox" name="spinBox"/>
+      <widget class="QSpinBox" name="wm0">
+       <property name="maximum">
+        <number>999</number>
+       </property>
+      </widget>
      </item>
      <item row="5" column="0">
       <widget class="QLabel" name="label_4">
@@ -172,15 +224,23 @@
         <string>1</string>
        </property>
        <property name="buddy">
-        <cstring>spinBox_6</cstring>
+        <cstring>cm1</cstring>
        </property>
       </widget>
      </item>
      <item row="10" column="3">
-      <widget class="QSpinBox" name="spinBox_16"/>
+      <widget class="QSpinBox" name="nt3">
+       <property name="maximum">
+        <number>99999</number>
+       </property>
+      </widget>
      </item>
      <item row="10" column="4">
-      <widget class="QSpinBox" name="spinBox_18"/>
+      <widget class="QSpinBox" name="nt4">
+       <property name="maximum">
+        <number>99999</number>
+       </property>
+      </widget>
      </item>
      <item row="2" column="1">
       <widget class="QLabel" name="label_11">
@@ -188,7 +248,7 @@
         <string>1</string>
        </property>
        <property name="buddy">
-        <cstring>spinBox_2</cstring>
+        <cstring>wm1</cstring>
        </property>
       </widget>
      </item>
@@ -198,7 +258,7 @@
         <string>2</string>
        </property>
        <property name="buddy">
-        <cstring>spinBox_7</cstring>
+        <cstring>cm2</cstring>
        </property>
       </widget>
      </item>
@@ -208,15 +268,23 @@
         <string>3</string>
        </property>
        <property name="buddy">
-        <cstring>spinBox_8</cstring>
+        <cstring>cm3</cstring>
        </property>
       </widget>
      </item>
      <item row="9" column="3">
-      <widget class="QSpinBox" name="spinBox_15"/>
+      <widget class="QSpinBox" name="vt3">
+       <property name="maximum">
+        <number>99999</number>
+       </property>
+      </widget>
      </item>
      <item row="3" column="4">
-      <widget class="QSpinBox" name="spinBox_5"/>
+      <widget class="QSpinBox" name="wm4">
+       <property name="maximum">
+        <number>999</number>
+       </property>
+      </widget>
      </item>
      <item row="2" column="5">
       <widget class="QLabel" name="label_21">
@@ -224,12 +292,16 @@
         <string>Domovní</string>
        </property>
        <property name="buddy">
-        <cstring>spinBox_19</cstring>
+        <cstring>wms</cstring>
        </property>
       </widget>
      </item>
      <item row="3" column="5">
-      <widget class="QSpinBox" name="spinBox_19"/>
+      <widget class="QSpinBox" name="wms">
+       <property name="maximum">
+        <number>999</number>
+       </property>
+      </widget>
      </item>
      <item row="4" column="4" rowspan="2" colspan="2">
       <widget class="QLabel" name="label_10">
@@ -243,7 +315,7 @@
         <string>Plyn [m3]</string>
        </property>
        <property name="buddy">
-        <cstring>spinBox_10</cstring>
+        <cstring>gas</cstring>
        </property>
       </widget>
      </item>
@@ -288,7 +360,11 @@
       </widget>
      </item>
      <item row="6" column="4" colspan="2">
-      <widget class="QSpinBox" name="spinBox_10"/>
+      <widget class="QSpinBox" name="gas">
+       <property name="maximum">
+        <number>99999</number>
+       </property>
+      </widget>
      </item>
     </layout>
    </item>
@@ -306,25 +382,25 @@
  </widget>
  <tabstops>
   <tabstop>dateEdit</tabstop>
-  <tabstop>spinBox</tabstop>
-  <tabstop>spinBox_2</tabstop>
-  <tabstop>spinBox_3</tabstop>
-  <tabstop>spinBox_4</tabstop>
-  <tabstop>spinBox_5</tabstop>
-  <tabstop>spinBox_19</tabstop>
-  <tabstop>spinBox_6</tabstop>
-  <tabstop>spinBox_7</tabstop>
-  <tabstop>spinBox_8</tabstop>
-  <tabstop>spinBox_9</tabstop>
-  <tabstop>spinBox_10</tabstop>
-  <tabstop>spinBox_11</tabstop>
-  <tabstop>spinBox_12</tabstop>
-  <tabstop>spinBox_13</tabstop>
-  <tabstop>spinBox_14</tabstop>
-  <tabstop>spinBox_15</tabstop>
-  <tabstop>spinBox_16</tabstop>
-  <tabstop>spinBox_17</tabstop>
-  <tabstop>spinBox_18</tabstop>
+  <tabstop>wm0</tabstop>
+  <tabstop>wm1</tabstop>
+  <tabstop>wm2</tabstop>
+  <tabstop>wm3</tabstop>
+  <tabstop>wm4</tabstop>
+  <tabstop>wms</tabstop>
+  <tabstop>cm1</tabstop>
+  <tabstop>cm2</tabstop>
+  <tabstop>cm3</tabstop>
+  <tabstop>cm4</tabstop>
+  <tabstop>gas</tabstop>
+  <tabstop>vt1</tabstop>
+  <tabstop>nt1</tabstop>
+  <tabstop>vt2</tabstop>
+  <tabstop>nt2</tabstop>
+  <tabstop>vt3</tabstop>
+  <tabstop>nt3</tabstop>
+  <tabstop>vt4</tabstop>
+  <tabstop>nt4</tabstop>
  </tabstops>
  <resources/>
  <connections>

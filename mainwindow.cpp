@@ -15,6 +15,7 @@
 #include "contract.h"
 #include "personform.h"
 #include "person.h"
+#include "energyform.h"
 
 void MainWindow::loadConfiguration()
 {
@@ -188,4 +189,11 @@ void MainWindow::on_tableView_2_doubleClicked(const QModelIndex &index)
 void MainWindow::on_comboBox_2_currentIndexChanged(int index)
 {
     loadEnergy(index);
+}
+
+void MainWindow::on_btnAddEnergy_clicked()
+{
+    energyForm form(db,this);
+    int res=form.exec();
+    if(res==form.Accepted) loadEnergy();
 }

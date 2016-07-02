@@ -41,6 +41,8 @@ private slots:
 
     void on_comboBox_2_currentIndexChanged(int index);
 
+    void on_btnAddEnergy_clicked();
+
 private:
     Ui::MainWindow *ui;
 };

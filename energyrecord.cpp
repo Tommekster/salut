@@ -1,4 +1,6 @@
 #include "energyrecord.h"
+#include "sqlI.h"
+#include <QDebug>
 
 void EnergyRecord::save()
 {
@@ -35,5 +37,12 @@ EnergyRecord *EnergyRecord::createEnergyRecord(sqlI *db,
     r->setEletricityMeters(eletricity_meters);
     r->save();
 
+    return r;
+}
+
+EnergyRecord *EnergyRecord::lastEnergyRecord(sqlI *db)
+{
+    EnergyRecord *r = new EnergyRecord(db);
+    db->lastEnergyRecord(r);
     return r;
 }
