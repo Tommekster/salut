@@ -73,6 +73,11 @@ void sqlTest::connect()
     q.exec("INSERT INTO `Energy` VALUES ('2016-03-27','3','136','94','109','171','325','8190','27537','10981','13012','14186','1235','2306','3475','5203','758','4010','2352','4075')");
     q.exec("INSERT INTO `Energy` VALUES ('2016-05-07','3','146','106','120','181','371','8556','28136','11537','13365','14908','1325','2592','3615','5510','814','4324','2487','4378')");
 
+    q.exec("CREATE TABLE CZKtransaction (transID integer, account integer, amount integer);");
+    q.exec("INSERT INTO `CZKtransaction` (transID,account,amount) VALUES (1,1,2000),(1,2,1500),(2,1,2000),(2,2,1500);");
+    q.exec("CREATE TABLE Konta (`rowid`	INTEGER PRIMARY KEY AUTOINCREMENT,`Label` varchar);");
+    q.exec("INSERT INTO Konta (rowid,Label) VALUES (1,'Konto'),(2,'nejake konto'),(3,'Dalsi konto');");
+
 }
 
 QAbstractItemModel *sqlTest::getContractsModel(bool active)
