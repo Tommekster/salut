@@ -23,6 +23,7 @@ SOURCES += main.cpp\
     personform.cpp \
     energyform.cpp \
     energyrecord.cpp \
+    transakceform.cpp \
     transakce.cpp
 
 HEADERS  += mainwindow.h \
@@ -36,8 +37,9 @@ HEADERS  += mainwindow.h \
     personform.h \
     energyform.h \
     energyrecord.h \
+    transakceform.h \
     transakce.h
 
 FORMS    += mainwindow.ui \
     energyform.ui \
-    transakce.ui
+    transakceform.ui

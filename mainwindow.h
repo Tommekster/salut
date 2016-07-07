@@ -49,6 +49,8 @@ private slots:
 
     void on_btnDeleteEnergy_clicked();
 
+    void on_btnTestFinance_clicked();
+
 private:
     Ui::MainWindow *ui;
 };

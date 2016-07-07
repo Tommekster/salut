@@ -19,6 +19,8 @@
 #include "energyform.h"
 #include "energyrecord.h"
 
+#include "transakceform.h"
+
 void MainWindow::loadConfiguration()
 {
     QSettings s ("config.ini", QSettings::IniFormat);
@@ -221,4 +223,10 @@ void MainWindow::on_btnDeleteEnergy_clicked()
         EnergyRecord::remove(db,rowid);
         loadEnergy();
     }
+}
+
+void MainWindow::on_btnTestFinance_clicked()
+{
+    TransakceForm t(this);
+    t.exec();
 }
