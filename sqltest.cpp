@@ -10,6 +10,7 @@
 #include "person.h"
 #include "contract.h"
 #include "energyrecord.h"
+#include "transakce.h"
 
 void sqlTest::connect()
 {
@@ -73,8 +74,12 @@ void sqlTest::connect()
     q.exec("INSERT INTO `Energy` VALUES ('2016-03-27','3','136','94','109','171','325','8190','27537','10981','13012','14186','1235','2306','3475','5203','758','4010','2352','4075')");
     q.exec("INSERT INTO `Energy` VALUES ('2016-05-07','3','146','106','120','181','371','8556','28136','11537','13365','14908','1325','2592','3615','5510','814','4324','2487','4378')");
 
-    q.exec("CREATE TABLE Finance (transID integer, account varchar, amount integer, notice varchar);");
-    q.exec("INSERT INTO Finance (transID,account,amount) VALUES (1,'Najem',2000),(1,'Zalohy',1500),(2,'Najem',2000),(2,'Zalohy',1500);");
+    q.exec("create table Transtion (rowid integer primary key, Datum date, Sum integer)");
+    q.exec("insert into Transtion (rowid,Datum,Sum) values (1,'2016-07-01',3500),(2,'2016-07-14',3500)");
+
+    q.exec("CREATE TABLE Finance (transID integer, Account varchar, Amount integer, Notice varchar);");
+    q.exec("INSERT INTO Finance (transID,Account,Amount,Notice) VALUES (1,'Najem',2000,'Najem kdosi'),(1,'Zalohy',1500,'Zaloha kdosi'),"
+           "(2,'Najem',2000,'Najem cosi'),(2,'Zalohy',1500,'zaloha cosi');");
 
 }
 
@@ -312,7 +317,7 @@ void sqlTest::selectFromContracts(Contract *c)
     }
 }
 
-void sqlTest::updateContract(Contract *c, bool code, bool from, bool to, bool valid, bool ownId, bool flatId, QList<int> &add, QList<int> &remove)
+void sqlTest::updateContract(Contract *c, bool code, bool from, bool to, bool valid, bool ownId, bool flatId, const QList<int> &add, const QList<int> &remove)
 {
     if(code || from || to || valid || ownId){
         QSqlQuery q(db);
@@ -530,6 +535,54 @@ void sqlTest::updateEnergy(EnergyRecord *r, bool datum, bool hm, bool cm, bool g
         q.bindValue(":nt4",eletricity_meters.at(3).nt);
     }
     q.exec();
+}
+
+int sqlTest::insertIntoTransakce(Transakce *t)
+{
+    QSqlQuery q(db);
+    q.prepare("insert into Transtion (Datum,Sum) values (:date,:sum)");
+    q.bindValue(":date",t->getDatum());
+    q.bindValue(":sum",t->getSum());
+    q.exec();
+
+    if(q.numRowsAffected() <1){
+        qDebug() << "insertInsertIntoContracts selhalo!";
+        return -1;
+    }else{
+        int rowid = q.lastInsertId().toInt();
+
+        // Nakonec ke smlouve prilozime residenty
+        QList<Transakce::Rozpis> add=t->getRozpis();
+        QList<Transakce::Rozpis>::const_iterator i;
+        for (i = add.constBegin(); i != add.constEnd(); ++i){
+            q.prepare("insert into Finance (transID,Account,Amount,Notice) values (:trans, :account, :amount, :notice)");
+            q.bindValue(":trans",rowid);
+            q.bindValue(":account",(*i).konto);
+            q.bindValue(":amount",(*i).amount);
+            q.bindValue(":notice",(*i).notice);
+            q.exec();
+        }
+
+        return rowid;
+    }
+}
+
+void sqlTest::updateTransakce(Transakce *t, bool datum, bool sum, const QList<Transakce::Rozpis> &add, const QList<int> &remove)
+{
+    if(datum || sum){
+        QSqlQuery q(db);
+        QStringList set;
+
+        if(datum) set << "Datum=:date";
+        if(sum) set << "Sum=:sum";
+
+        q.prepare("update Transtion set "+set.join(",")+" where rowid=:id");
+        q.bindValue(":id",t->getRowId());
+        if(datum) q.bindValue(":date",t->getDatum());
+        if(sum)     q.bindValue(":sum",t->getSum());
+        q.exec();
+    }
+
 }
 
 QMap<int, QString> sqlTest::getPersonsName()

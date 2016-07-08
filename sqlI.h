@@ -8,6 +8,8 @@ class QAbstractItemModel;
 class Person;
 class Contract;
 class EnergyRecord;
+class Transakce;
+struct Transakce::Rozpis;
 
 class sqlI : public QObject
 {
@@ -31,12 +33,14 @@ public:
     virtual void updatePerson(Person *,bool,bool,bool,bool,bool,bool,bool) = 0;
     virtual int insertIntoContracts(Contract *) = 0;
     virtual void selectFromContracts(Contract *) = 0;
-    virtual void updateContract(Contract *,bool,bool,bool,bool,bool,bool,QList<int> &,QList<int> &) = 0;
+    virtual void updateContract(Contract *,bool,bool,bool,bool,bool,bool,const QList<int> &,const QList<int> &) = 0;
     virtual int insertIntoEnergy(EnergyRecord *) = 0;
     virtual void lastEnergyRecord(EnergyRecord *) = 0;
     virtual void selectFromEnergy(EnergyRecord *) = 0;
     virtual void deleteEnergyRecord(EnergyRecord *) = 0;
     virtual void updateEnergy(EnergyRecord *,bool,bool,bool,bool,bool) = 0;
+    virtual int insertIntoTransakce(Transakce *) = 0;
+    virtual void updateTransakce(Transakce *,bool,bool,const QList<Transakce::Rozpis> &,const QList<int> &) = 0;
     virtual void disconnect() = 0;
 
     bool isConnected() {return connected;}

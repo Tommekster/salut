@@ -3,6 +3,21 @@
 
 #include <QComboBox>
 
+void TransakceForm::fillForm()
+{
+    ui->dateEdit->setDate(QDate::currentDate());
+
+    ui->tableWidget->setColumnCount(3);
+    ui->tableWidget->setRowCount(0);
+    ui->tableWidget->setColumnWidth(0,150);
+    ui->tableWidget->setColumnWidth(1,100);
+    ui->tableWidget->setColumnWidth(2,250);
+    QStringList labels; labels << tr("Konto") << tr("Částka") << tr("Poznámka");
+    ui->tableWidget->setHorizontalHeaderLabels(labels);
+
+    connect(ui->spnAmount,SIGNAL(valueChanged(int)),this,SLOT(checkAmount()));
+}
+
 void TransakceForm::addRow()
 {
     addRow(QString(),0,QString(""));
@@ -43,28 +58,35 @@ void TransakceForm::removeRow()
     ui->tableWidget->removeRow(toRemove);
 }
 
-TransakceForm::TransakceForm(QWidget *parent) :
+void TransakceForm::save()
+{
+
+}
+
+TransakceForm::TransakceForm(sqlI *_db, QWidget *parent) :
+    db(_db),
     QDialog(parent),
-    ui(new Ui::TransakceForm)
+    ui(new Ui::TransakceForm),addingNew(true),ownTransakce(false)
 {
     ui->setupUi(this);
 
-    ui->dateEdit->setDate(QDate::currentDate());
+    fillForm();
+}
 
-    ui->tableWidget->setColumnCount(3);
-    ui->tableWidget->setRowCount(0);
-    ui->tableWidget->setColumnWidth(0,150);
-    ui->tableWidget->setColumnWidth(1,100);
-    ui->tableWidget->setColumnWidth(2,250);
-    QStringList labels; labels << tr("Konto") << tr("Částka") << tr("Poznámka");
-    ui->tableWidget->setHorizontalHeaderLabels(labels);
+TransakceForm::TransakceForm(sqlI *_db, Transakce *t, QWidget *parent) :
+    db(_db),transakce(t),
+    QDialog(parent),
+    ui(new Ui::TransakceForm),addingNew(false),ownTransakce(true)
+{
+    ui->setupUi(this);
 
-    connect(ui->spnAmount,SIGNAL(valueChanged(int)),this,SLOT(checkAmount()));
+    fillForm();
 }
 
 TransakceForm::~TransakceForm()
 {
     delete ui;
+    if(ownTransakce) delete transakce;
 }
 
 void TransakceForm::on_btnAdd_clicked()
