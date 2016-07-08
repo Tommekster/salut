@@ -74,13 +74,28 @@ void sqlTest::connect()
     q.exec("INSERT INTO `Energy` VALUES ('2016-03-27','3','136','94','109','171','325','8190','27537','10981','13012','14186','1235','2306','3475','5203','758','4010','2352','4075')");
     q.exec("INSERT INTO `Energy` VALUES ('2016-05-07','3','146','106','120','181','371','8556','28136','11537','13365','14908','1325','2592','3615','5510','814','4324','2487','4378')");
 
-    q.exec("create table Transtion (rowid integer primary key, Datum date, Sum integer)");
-    q.exec("insert into Transtion (rowid,Datum,Sum) values (1,'2016-07-01',3500),(2,'2016-07-14',3500)");
+    q.exec("create table Transtion (rowid integer primary key, Datum date, Amount integer)");
+    //q.exec("insert into Transtion (rowid,Datum,Amount) values (1,'2016-07-01',3500),(2,'2016-07-14',3500)");
+    q.exec("insert into Transtion (rowid,Datum,Amount) values (1,'2016-05-02', 2250),(2,'2016-05-02', 7405),"
+           "(3,'2016-05-04', 2250),(4,'2016-05-16', 2250),(5,'2016-05-19', 2250),(6,'2016-05-24', 3500),(7,'2016-05-24', 7000),"
+           "(8,'2016-06-02', 2250),(9,'2016-06-03', 7000),(10,'2016-06-06', 7405),(11,'2016-06-06', 2250),(12,'2016-06-14', 2250);");
 
     q.exec("CREATE TABLE Finance (transID integer, Account varchar, Amount integer, Notice varchar);");
-    q.exec("INSERT INTO Finance (transID,Account,Amount,Notice) VALUES (1,'Najem',2000,'Najem kdosi'),(1,'Zalohy',1500,'Zaloha kdosi'),"
-           "(2,'Najem',2000,'Najem cosi'),(2,'Zalohy',1500,'zaloha cosi');");
+    //q.exec("INSERT INTO Finance (transID,Account,Amount,Notice) VALUES (1,'Najem',2000,'Najem kdosi'),(1,'Zalohy',1500,'Zaloha kdosi'),(2,'Najem',2000,'Najem cosi'),(2,'Zalohy',1500,'zaloha cosi');");
+    q.exec("insert into Finance (transID,Account,Notice,Amount) values (1,'Najmy 2016','KOLAROVA VLASTA',1500),"
+           "(2,'Najmy 2016','Pekocova DANA',6000),(3,'Najmy 2016','CHARVAT ROMAN',1500),(4,'Najmy 2016','STRYNKOVA ANEZKA',1500),"
+           "(5,'Najmy 2016','Satra Radek',1500),(6,'Najmy 2016','KROBOVA GABRIELA',2000),(7,'Najmy 2016','Magdalena Sefferova kveten+cerven',4000),"
+           "(8,'Najmy 2016','KOLAROVA VLASTA',1500),(10,'Najmy 2016','Pekocova DANA',6000),(11,'Najmy 2016','CHARVAT ROMAN',1500),"
+           "(12,'Najmy 2016','STRYNKOVA ANEZKA',1500);");
+    q.exec("insert into Finance (transID,Account,Amount) values (1,'Zálohy byt 2',750),(2,'Zálohy byt 4',1405),"
+           "(3,'Zálohy byt 2',750),(4,'Zálohy byt 2',750),(5,'Zálohy byt 2',750),(6,'Zálohy byt 3',1500),(7,'Zálohy byt 3',3000),"
+           "(8,'Zálohy byt 2',750),(10,'Zálohy byt 4',1405),(11,'Zálohy byt 2',750),(12,'Zálohy byt 2',750),(9,'Jistota Magdalena Sefferova',7000);");
 
+    /*
+insert into Transtion (rowid,Datum,Amount) values (1,'2016-05-02', 2250),(2,'2016-05-02', 7405),(3,'2016-05-04', 2250),(4,'2016-05-16', 2250),(5,'2016-05-19', 2250),(6,'2016-05-24', 3500),(7,'2016-05-24', 7000),(8,'2016-06-02', 2250),(9,'2016-06-03', 7000),(10,'2016-06-06', 7405),(11,'2016-06-06', 2250),(12,'2016-06-14', 2250);
+insert into Finance (transID,Account,Notice,Amount) values (1,'Najmy 2016','KOLAROVA VLASTA',1500),(2,'Najmy 2016','Pekocova DANA',6000),(3,'Najmy 2016','CHARVAT ROMAN',1500),(4,'Najmy 2016','STRYNKOVA ANEZKA',1500),(5,'Najmy 2016','Satra Radek',1500),(6,'Najmy 2016','KROBOVA GABRIELA',2000),(7,'Najmy 2016','Magdalena Sefferova kveten+cerven',4000),(8,'Najmy 2016','KOLAROVA VLASTA',1500),(10,'Najmy 2016','Pekocova DANA',6000),(11,'Najmy 2016','CHARVAT ROMAN',1500),(12,'Najmy 2016','STRYNKOVA ANEZKA',1500);
+insert into Finance (transID,Account,Amount) values (1,'Zálohy byt 2',750),(2,'Zálohy byt 4',1405),(3,'Zálohy byt 2',750),(4,'Zálohy byt 2',750),(5,'Zálohy byt 2',750),(6,'Zálohy byt 3',1500),(7,'Zálohy byt 3',3000),(8,'Zálohy byt 2',750),(10,'Zálohy byt 4',1405),(11,'Zálohy byt 2',750),(12,'Zálohy byt 2',750),(9,'Jistota Magdalena Sefferova',7000);
+    */
 }
 
 QAbstractItemModel *sqlTest::getContractsModel(bool active)
@@ -540,7 +555,7 @@ void sqlTest::updateEnergy(EnergyRecord *r, bool datum, bool hm, bool cm, bool g
 int sqlTest::insertIntoTransakce(Transakce *t)
 {
     QSqlQuery q(db);
-    q.prepare("insert into Transtion (Datum,Sum) values (:date,:sum)");
+    q.prepare("insert into Transtion (Datum,Amount) values (:date,:sum)");
     q.bindValue(":date",t->getDatum());
     q.bindValue(":sum",t->getSum());
     q.exec();
@@ -609,13 +624,13 @@ void sqlTest::updateTransakce(Transakce *t, bool datum, bool sum, bool additions
 void sqlTest::selectFromTransakce(Transakce *t)
 {
     QSqlQuery q(db);
-    q.prepare("select Datum,Sum from Transation where rowid=:id");
+    q.prepare("select Datum,Amount from Transation where rowid=:id");
     q.bindValue(":id",t->getRowId());
     q.exec();
 
     if(q.first()){
         t->setDatum(q.value("Datum").toDate());
-        t->setSum(q.value("Sum").toInt());
+        t->setSum(q.value("Amount").toInt());
 
         QList<Transakce::Rozpis> rozpisy;
         q.prepare("select rowid,Account,Amount,Notice from Finance where transID==:trans");
@@ -654,6 +669,41 @@ QMap<int, QString> sqlTest::getFlatsName()
         m.insert(q.value("rowid").toInt(),q.value("Code").toString());
     }
     //qDebug() << q.lastError().text() << endl;
+    return m;
+}
+
+QAbstractItemModel *sqlTest::getAccountsModel()
+{
+    QSqlQueryModel *m = new QSqlQueryModel(this);
+    m->setQuery("select Account,sum(Amount) as Amount from Finance group by Account",db);
+    m->setHeaderData(0,Qt::Horizontal,tr("Account"));
+    m->setHeaderData(1,Qt::Horizontal,tr("Amount"));
+
+    if(m->lastError().type() != QSqlError::NoError){
+        qDebug() << "Mam chybu v modelu. " << m->lastError().text();
+        return NULL; // TODO
+    }
+
+    return m;
+}
+
+QAbstractItemModel *sqlTest::getTransakceModel(QString account)
+{
+    QSqlQuery q(db);
+    q.prepare("select Transtion.rowid as TransID, Transtion.Datum as Datum, Finance.Notice as Notice, Finance.Amount as Amount from Finance "
+              "left join Transtion on Finance.transID=Transtion.rowid where Finance.Account==:account order by Transtion.Datum desc");
+    q.bindValue(":account",account);
+    q.exec();
+    QSqlQueryModel *m = new QSqlQueryModel(this);
+    m->setQuery(q);
+    //m->setHeaderData(0,Qt::Horizontal,tr("Account"));
+    //m->setHeaderData(1,Qt::Horizontal,tr("Amount"));
+
+    if(m->lastError().type() != QSqlError::NoError){
+        qDebug() << "Mam chybu v modelu. " << m->lastError().text();
+        return NULL; // TODO
+    }
+
     return m;
 }
 

@@ -28,6 +28,7 @@ public:
 private slots:
     void loadContracts();
     void loadPersons();
+    void loadFinance();
     void loadEnergy();
     void loadEnergy(int);
     void testFn();
@@ -36,20 +37,14 @@ private slots:
     void on_tabWidget_currentChanged(int index);
 
     void on_btnAddContract_clicked();
-
     void on_btnAddPerson_clicked();
-
     void on_tableView_2_doubleClicked(const QModelIndex &index);
-
     void on_comboBox_2_currentIndexChanged(int index);
-
     void on_btnAddEnergy_clicked();
-
     void on_tableView_3_doubleClicked(const QModelIndex &index);
-
     void on_btnDeleteEnergy_clicked();
-
     void on_btnTestFinance_clicked();
+    void on_tableAccounts_clicked(const QModelIndex &index);
 
 private:
     Ui::MainWindow *ui;

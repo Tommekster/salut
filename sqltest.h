@@ -27,6 +27,8 @@ public:
     virtual QMap<int, QString> getPersonsName();
     //virtual QMap<int, QString> getResidentsName(int);
     virtual QMap<int, QString> getFlatsName();
+    virtual QAbstractItemModel *getAccountsModel();
+    virtual QAbstractItemModel *getTransakceModel(QString);
     virtual QStringList getTransakceAccounts();
     virtual QStringList getTransakceNotices();
     virtual int insertIntoPersons(Person *);

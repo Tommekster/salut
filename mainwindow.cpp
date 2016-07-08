@@ -114,6 +114,20 @@ void MainWindow::loadPersons()
     ui->tableView_2->setEditTriggers(QAbstractItemView::NoEditTriggers);
 }
 
+void MainWindow::loadFinance()
+{
+    if(!db->isConnected()) {
+        qDebug() << "Koncim, protoze DB neni otevrena.\n";
+        return;
+    }
+
+    ui->tableAccounts->setModel(db->getAccountsModel());
+    //ui->tableView_2->setColumnHidden(0,true);
+    //ui->tableView_2->setColumnWidth(1,120);
+    ui->tableAccounts->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    ui->tablePayments->clearFocus();
+}
+
 void MainWindow::loadEnergy()
 {
     loadEnergy(ui->comboBox_2->currentIndex());
@@ -162,6 +176,9 @@ void MainWindow::on_tabWidget_currentChanged(int tab)
         break;
     case 1: // Persons
         loadPersons();
+        break;
+    case 2: // Persons
+        loadFinance();
         break;
     case 3: // Energy
         loadEnergy();
@@ -229,4 +246,14 @@ void MainWindow::on_btnTestFinance_clicked()
 {
     TransakceForm t(db,this);
     t.exec();
+}
+
+void MainWindow::on_tableAccounts_clicked(const QModelIndex &index)
+{
+    const QAbstractItemModel *m = index.model();
+    QString account=m->data(index.sibling(index.row(),0)).toString();
+    qDebug() << "Vybrano kono: "<<account;
+    //ui->tablePayments->clear();
+    ui->tablePayments->setModel(db->getTransakceModel(account));
+    ui->tablePayments->setEditTriggers(QAbstractItemView::NoEditTriggers);
 }
