@@ -101,7 +101,6 @@ void personForm::on_submit()
                     edtPhone->text(),
                     edtBank->text());
         ownPerson=true;
-        accept();
     }else{
         _person->updName(edtName->text());
         _person->updSurname(edtSurname->text());
@@ -111,8 +110,7 @@ void personForm::on_submit()
         _person->updPhone(edtPhone->text());
         _person->updBank(edtBank->text());
 
-        _person->update();
-        accept();
+        _person->update();    
     }
-
+    accept();
 }

@@ -234,7 +234,6 @@ void contractForm::on_submit()
                     cmbFlat->currentData().toInt(),
                     residents);
         ownContract = true;
-        accept();
     }else{
         _contract->updCode(edtCode->text());
         _contract->updFrom(edtValidFrom->date());
@@ -245,6 +244,6 @@ void contractForm::on_submit()
         _contract->updResidents(residents);
 
         _contract->update();
-        accept();
     }
+    accept();
 }

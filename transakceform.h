@@ -3,6 +3,10 @@
 
 #include <QDialog>
 
+
+class sqlI;
+class Transakce;
+
 namespace Ui {
 class TransakceForm;
 }
@@ -11,12 +15,21 @@ class TransakceForm : public QDialog
 {
     Q_OBJECT
 
+    sqlI *db;
+    Transakce *transakce;
+    bool addingNew;
+    bool ownTransakce;
+
+    void fillForm();
     void addRow();
     void addRow(QString _konto, int _amount, QString _notice);
     void removeRow();
 
+    void save();
+
 public:
-    explicit TransakceForm(QWidget *parent = 0);
+    explicit TransakceForm(sqlI *_db,QWidget *parent = 0);
+    explicit TransakceForm(sqlI *_db,Transakce *t,QWidget *parent = 0);
     ~TransakceForm();
 
 private slots:

@@ -1,24 +1,39 @@
 #include "transakce.h"
 #include "sqlI.h"
+#include <QDebug>
 
 void Transakce::save()
 {
     if(isNew){
-        db->insertIntoTransakce(this);
+        int id=db->insertIntoTransakce(this);
+        if(id<0) qDebug()<< "V transtion jsem si vsiml, ze jsem nic nevlozil.";
+        else{
+            isNew=false;
+            rowid=id;
+        }
+    }else{
+        db->updateTransakce(this,chDatum,chSum,!newRozpis.isEmpty(),removeRozpis);
     }
 }
 
 Transakce::Transakce(sqlI *_db)
+    :db(_db),isNew(true),chDatum(false),chSum(false)
+{}
+Transakce::Transakce(sqlI *_db, int id)
+    :db(_db),rowid(id),isNew(false),chDatum(false),chSum(false)
 {
-
+    db->selectFromTransakce(this);
 }
 
-Transakce *Transakce::createTransakce(sqlI *db, QDate datum, const QList<Transakce::Rozpis> &rozpis)
+Transakce *Transakce::createTransakce(sqlI *db, QDate datum, int sum, const QList<Transakce::Rozpis> &rozpis)
 {
     Transakce *t=new Transakce(db);
     t->datum=datum;
+    t->sum=sum;
     t->rozpis=rozpis;
     t->save();
+
+    return t;
 }
 
 void Transakce::updDatum(QDate d)
@@ -57,4 +72,12 @@ void Transakce::updRozpis(QList<Transakce::Rozpis> novy)
         if(novy.indexOf(*i) == -1) // stary prvek neni v novem seznamu
             removeRozpis.append((*i).rowid); // pridame ho do "k odstraneni"
     }
+}
+
+void Transakce::update()
+{
+    save();
+    chDatum=chSum=false;
+    newRozpis.clear();
+    removeRozpis.clear();
 }

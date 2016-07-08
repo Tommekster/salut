@@ -27,17 +27,22 @@ public:
     virtual QMap<int, QString> getPersonsName();
     //virtual QMap<int, QString> getResidentsName(int);
     virtual QMap<int, QString> getFlatsName();
+    virtual QStringList getTransakceAccounts();
+    virtual QStringList getTransakceNotices();
     virtual int insertIntoPersons(Person *);
     virtual void selectFromPersons(Person *);
     virtual void updatePerson(Person *,bool,bool,bool,bool,bool,bool,bool);
     virtual int insertIntoContracts(Contract *);
     virtual void selectFromContracts(Contract *);
-    virtual void updateContract(Contract *,bool,bool,bool,bool,bool,bool,QList<int> &,QList<int> &);
+    virtual void updateContract(Contract *,bool,bool,bool,bool,bool,bool,const QList<int> &,const QList<int> &);
     virtual int insertIntoEnergy(EnergyRecord *);
     virtual void lastEnergyRecord(EnergyRecord *);
     virtual void selectFromEnergy(EnergyRecord *);
     virtual void deleteEnergyRecord(EnergyRecord *);
     virtual void updateEnergy(EnergyRecord *,bool,bool,bool,bool,bool);
+    virtual int insertIntoTransakce(Transakce *);
+    virtual void updateTransakce(Transakce *,bool,bool,bool,const QList<int> &);
+    virtual void selectFromTransakce(Transakce *);
     virtual void disconnect();
 };
 

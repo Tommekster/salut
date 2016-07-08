@@ -27,8 +27,6 @@ private:
     QList<EnergyRecord::EletricityMeter> eletricity_meters;
 
     bool isNew;
-
-
     void save();
     bool chDatum, chHydrometers, chCalorimeters, chGasometer, chEletricityMeters;
 public:

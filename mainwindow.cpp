@@ -227,6 +227,6 @@ void MainWindow::on_btnDeleteEnergy_clicked()
 
 void MainWindow::on_btnTestFinance_clicked()
 {
-    TransakceForm t(this);
+    TransakceForm t(db,this);
     t.exec();
 }

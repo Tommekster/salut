@@ -1,5 +1,7 @@
 #include "transakceform.h"
 #include "ui_transakceform.h"
+#include "transakce.h"
+#include "sqlI.h"
 
 #include <QComboBox>
 
@@ -26,7 +28,8 @@ void TransakceForm::addRow()
 void TransakceForm::addRow(QString _konto,int _amount, QString _notice)
 {
     QComboBox *konto=new QComboBox(this);
-    QStringList lstKonta; lstKonta << "Jedno konto" << "druhe konto" << "dalsi konto";
+    QStringList lstKonta=db->getTransakceAccounts();
+    //lstKonta << "Jedno konto" << "druhe konto" << "dalsi konto";
     konto->addItems(lstKonta);
     konto->setEditable(true);
     if(!_konto.isNull()) //konto->addItem(_konto);
@@ -40,7 +43,8 @@ void TransakceForm::addRow(QString _konto,int _amount, QString _notice)
     connect(amount,SIGNAL(valueChanged(int)),this,SLOT(checkAmount()));
 
     QComboBox *notice=new QComboBox(this);
-    QStringList lstNotice; lstNotice << "Nájem" << "Zálohy" << "Jistota";
+    QStringList lstNotice=db->getTransakceNotices();
+    //lstNotice << "Nájem" << "Zálohy" << "Jistota";
     notice->addItems(lstNotice);
     notice->setEditable(true);
     notice->setCurrentText(_notice);
@@ -60,7 +64,31 @@ void TransakceForm::removeRow()
 
 void TransakceForm::save()
 {
+    QList<Transakce::Rozpis> rozpis;
+    int rows = ui->tableWidget->rowCount();
+    for(int i=0; i<rows;i++){
+        QComboBox *konto  = (QComboBox *) ui->tableWidget->cellWidget(i,0);
+        QSpinBox  *amount =  (QSpinBox *) ui->tableWidget->cellWidget(i,1);
+        QComboBox *notice = (QComboBox *) ui->tableWidget->cellWidget(i,2);
 
+        rozpis << Transakce::Rozpis(konto->currentText(),
+                                    amount->value(),
+                                    notice->currentText());
+    }
+
+    if(addingNew){
+        transakce = Transakce::createTransakce(db,
+                                               ui->dateEdit->date(),
+                                               ui->spnAmount->value(),
+                                               rozpis);
+        ownTransakce = true;
+    }else{
+        transakce->updDatum(ui->dateEdit->date());
+        transakce->updSum(ui->spnAmount->value());
+        transakce->updRozpis(rozpis);
+
+        transakce->update();
+    }
 }
 
 TransakceForm::TransakceForm(sqlI *_db, QWidget *parent) :

@@ -5,11 +5,12 @@
 #include <QObject>
 
 class QAbstractItemModel;
+class QStringList;
 class Person;
 class Contract;
 class EnergyRecord;
 class Transakce;
-struct Transakce::Rozpis;
+//struct Transakce::Rozpis;
 
 class sqlI : public QObject
 {
@@ -28,6 +29,10 @@ public:
     virtual QMap<int, QString> getPersonsName() = 0;
     //virtual QMap<int, QString> getResidentsName(int) = 0;
     virtual QMap<int, QString> getFlatsName() = 0;
+    virtual QAbstractItemModel *getAccountsModel() = 0;
+    virtual QAbstractItemModel *getTransakceModel(QString) = 0;
+    virtual QStringList getTransakceAccounts() = 0;
+    virtual QStringList getTransakceNotices() = 0;
     virtual int insertIntoPersons(Person *) = 0;
     virtual void selectFromPersons(Person *) = 0;
     virtual void updatePerson(Person *,bool,bool,bool,bool,bool,bool,bool) = 0;
@@ -40,7 +45,8 @@ public:
     virtual void deleteEnergyRecord(EnergyRecord *) = 0;
     virtual void updateEnergy(EnergyRecord *,bool,bool,bool,bool,bool) = 0;
     virtual int insertIntoTransakce(Transakce *) = 0;
-    virtual void updateTransakce(Transakce *,bool,bool,const QList<Transakce::Rozpis> &,const QList<int> &) = 0;
+    virtual void updateTransakce(Transakce *,bool,bool,bool,const QList<int> &) = 0;
+    virtual void selectFromTransakce(Transakce *) = 0;
     virtual void disconnect() = 0;
 
     bool isConnected() {return connected;}

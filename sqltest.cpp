@@ -567,7 +567,7 @@ int sqlTest::insertIntoTransakce(Transakce *t)
     }
 }
 
-void sqlTest::updateTransakce(Transakce *t, bool datum, bool sum, const QList<Transakce::Rozpis> &add, const QList<int> &remove)
+void sqlTest::updateTransakce(Transakce *t, bool datum, bool sum, bool additions, const QList<int> &remove)
 {
     if(datum || sum){
         QSqlQuery q(db);
@@ -582,7 +582,55 @@ void sqlTest::updateTransakce(Transakce *t, bool datum, bool sum, const QList<Tr
         if(sum)     q.bindValue(":sum",t->getSum());
         q.exec();
     }
+    if(additions){
+        QList<Transakce::Rozpis> *add=t->getNewRozpis();
+        QSqlQuery q(db);
+        QList<Transakce::Rozpis>::const_iterator i;
+        for (i = add->constBegin(); i != add->constEnd(); ++i){
+            q.prepare("insert into Finance (transID,Account,Amount,Notice) values (:trans, :account, :amount, :notice)");
+            q.bindValue(":trans",t->getRowId());
+            q.bindValue(":account",(*i).konto);
+            q.bindValue(":amount",(*i).amount);
+            q.bindValue(":notice",(*i).notice);
+            q.exec();
+        }
+    }
+    if(!remove.isEmpty()){
+        QSqlQuery q(db);
+        QList<int>::const_iterator i;
+        for (i = remove.constBegin(); i != remove.constEnd(); ++i){
+            q.prepare("delete from Finance where rowid==:id");
+            q.bindValue(":id", *i);
+            q.exec();
+        }
+    }
+}
 
+void sqlTest::selectFromTransakce(Transakce *t)
+{
+    QSqlQuery q(db);
+    q.prepare("select Datum,Sum from Transation where rowid=:id");
+    q.bindValue(":id",t->getRowId());
+    q.exec();
+
+    if(q.first()){
+        t->setDatum(q.value("Datum").toDate());
+        t->setSum(q.value("Sum").toInt());
+
+        QList<Transakce::Rozpis> rozpisy;
+        q.prepare("select rowid,Account,Amount,Notice from Finance where transID==:trans");
+        q.bindValue(":trans",t->getRowId());
+        q.exec();
+        while(q.next()){
+            rozpisy << Transakce::Rozpis(q.value("rowid").toInt(),
+                                         q.value("Account").toString(),
+                                         q.value("Amount").toInt(),
+                                         q.value("Notice").toString());
+        }
+        t->appendRozpis(rozpisy);
+    }else{
+        qDebug() << "selectFromTransakce: Zaznam nebyl nalezen!";
+    }
 }
 
 QMap<int, QString> sqlTest::getPersonsName()
@@ -603,10 +651,32 @@ QMap<int, QString> sqlTest::getFlatsName()
     QMap<int,QString> m;
     q.exec("select rowid, Code from Flats");
     while(q.next()){
-        m.insert(q.value(0).toInt(),q.value(1).toString());
+        m.insert(q.value("rowid").toInt(),q.value("Code").toString());
     }
     //qDebug() << q.lastError().text() << endl;
     return m;
+}
+
+QStringList sqlTest::getTransakceAccounts()
+{
+    QSqlQuery q(db);
+    QStringList l;
+    q.exec("select Account from Finance group by Account");
+    while(q.next()){
+        l << q.value("Account").toString();
+    }
+    return l;
+}
+
+QStringList sqlTest::getTransakceNotices()
+{
+    QSqlQuery q(db);
+    QStringList l;
+    q.exec("select Notice from Finance group by Notice");
+    while(q.next()){
+        l << q.value("Notice").toString();
+    }
+    return l;
 }
 
 void sqlTest::disconnect()
