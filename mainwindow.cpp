@@ -18,8 +18,8 @@
 #include "person.h"
 #include "energyform.h"
 #include "energyrecord.h"
-
 #include "transakceform.h"
+#include "transakce.h"
 
 void MainWindow::loadConfiguration()
 {
@@ -244,16 +244,34 @@ void MainWindow::on_btnDeleteEnergy_clicked()
 
 void MainWindow::on_btnTestFinance_clicked()
 {
-    TransakceForm t(db,this);
-    t.exec();
+    return;
+    //TransakceForm t(db,this);
+    //t.exec();
 }
 
 void MainWindow::on_tableAccounts_clicked(const QModelIndex &index)
 {
     const QAbstractItemModel *m = index.model();
     QString account=m->data(index.sibling(index.row(),0)).toString();
-    qDebug() << "Vybrano kono: "<<account;
+    //qDebug() << "Vybrano kono: "<<account;
     //ui->tablePayments->clear();
     ui->tablePayments->setModel(db->getTransakceModel(account));
     ui->tablePayments->setEditTriggers(QAbstractItemView::NoEditTriggers);
+}
+
+void MainWindow::on_btnAddTransakce_clicked()
+{
+    TransakceForm t(db,this);
+    int r=t.exec();
+    if(r==t.Accepted) loadFinance();
+}
+
+void MainWindow::on_tablePayments_doubleClicked(const QModelIndex &index)
+{
+    const QAbstractItemModel *m = index.model();
+    int transID=m->data(index.sibling(index.row(),0)).toInt();
+    Transakce *t=new Transakce(db,transID);
+    TransakceForm f(db,t,this);
+    int r=f.exec();
+    if(r==f.Accepted) loadFinance();
 }

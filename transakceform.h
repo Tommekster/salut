@@ -34,9 +34,11 @@ public:
 
 private slots:
     void on_btnAdd_clicked();
-    void checkAmount();
+    bool checkAmount();
 
     void on_btnRemove_clicked();
+
+    void on_buttonBox_accepted();
 
 private:
     Ui::TransakceForm *ui;

@@ -4,11 +4,10 @@
 #include "sqlI.h"
 
 #include <QComboBox>
+#include <QMessageBox>
 
 void TransakceForm::fillForm()
 {
-    ui->dateEdit->setDate(QDate::currentDate());
-
     ui->tableWidget->setColumnCount(3);
     ui->tableWidget->setRowCount(0);
     ui->tableWidget->setColumnWidth(0,150);
@@ -18,6 +17,20 @@ void TransakceForm::fillForm()
     ui->tableWidget->setHorizontalHeaderLabels(labels);
 
     connect(ui->spnAmount,SIGNAL(valueChanged(int)),this,SLOT(checkAmount()));
+
+    if(addingNew){
+        ui->dateEdit->setDate(QDate::currentDate());
+    } else {
+        ui->dateEdit->setDate(transakce->getDatum());
+        ui->spnAmount->setValue(transakce->getSum());
+
+        QList<Transakce::Rozpis> r=transakce->getRozpis();
+        QList<Transakce::Rozpis>::const_iterator i;
+        for(i=r.constBegin(); i != r.constEnd(); ++i){
+            addRow((*i).konto,(*i).amount,(*i).notice);
+        }
+    }
+    checkAmount();
 }
 
 void TransakceForm::addRow()
@@ -64,6 +77,11 @@ void TransakceForm::removeRow()
 
 void TransakceForm::save()
 {
+    if(!checkAmount()){
+        QMessageBox::critical(this,tr("Špatně vyplněný formulář!"),tr("Neodpovídá součet transakce. Prosím, opravte hodnoty. "));
+        return;
+    }
+
     QList<Transakce::Rozpis> rozpis;
     int rows = ui->tableWidget->rowCount();
     for(int i=0; i<rows;i++){
@@ -123,7 +141,7 @@ void TransakceForm::on_btnAdd_clicked()
     checkAmount();
 }
 
-void TransakceForm::checkAmount()
+bool TransakceForm::checkAmount()
 {
     int rows = ui->tableWidget->rowCount();
     int sum = 0;
@@ -134,8 +152,10 @@ void TransakceForm::checkAmount()
 
     if(sum == ui->spnAmount->value()){
         ui->spnAmount->setStyleSheet("");
+        return true;
     }else{
         ui->spnAmount->setStyleSheet("background: #f88;");
+        return false;
     }
 }
 
@@ -143,4 +163,9 @@ void TransakceForm::on_btnRemove_clicked()
 {
     removeRow();
     checkAmount();
+}
+
+void TransakceForm::on_buttonBox_accepted()
+{
+    save();
 }

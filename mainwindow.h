@@ -46,6 +46,10 @@ private slots:
     void on_btnTestFinance_clicked();
     void on_tableAccounts_clicked(const QModelIndex &index);
 
+    void on_btnAddTransakce_clicked();
+
+    void on_tablePayments_doubleClicked(const QModelIndex &index);
+
 private:
     Ui::MainWindow *ui;
 };

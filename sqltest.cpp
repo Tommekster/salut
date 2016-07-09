@@ -624,7 +624,7 @@ void sqlTest::updateTransakce(Transakce *t, bool datum, bool sum, bool additions
 void sqlTest::selectFromTransakce(Transakce *t)
 {
     QSqlQuery q(db);
-    q.prepare("select Datum,Amount from Transation where rowid=:id");
+    q.prepare("select Datum,Amount from Transtion where rowid=:id");
     q.bindValue(":id",t->getRowId());
     q.exec();
 
