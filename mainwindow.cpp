@@ -68,6 +68,7 @@ MainWindow::MainWindow(QWidget *parent) :
     dbConnect();
 
     ui->setupUi(this);
+    setWindowTitle(tr("Salut s.r.o >>o<< Hospodář"));
     ui->comboBox_2->addItem(tr("Water"));
     ui->comboBox_2->addItem(tr("Heating"));
     ui->comboBox_2->addItem(tr("Electricity"));
@@ -125,7 +126,11 @@ void MainWindow::loadFinance()
     //ui->tableView_2->setColumnHidden(0,true);
     //ui->tableView_2->setColumnWidth(1,120);
     ui->tableAccounts->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    ui->tableAccounts->setColumnWidth(0,300);
+    ui->tableAccounts->setColumnWidth(1,100);
+
     ui->tablePayments->clearFocus();
+    //ui->tablePayments->cle
 }
 
 void MainWindow::loadEnergy()
@@ -257,6 +262,10 @@ void MainWindow::on_tableAccounts_clicked(const QModelIndex &index)
     //ui->tablePayments->clear();
     ui->tablePayments->setModel(db->getTransakceModel(account));
     ui->tablePayments->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    ui->tablePayments->setColumnHidden(0,true);
+    ui->tablePayments->setColumnWidth(1,100);
+    ui->tablePayments->setColumnWidth(2,250);
+    ui->tablePayments->setColumnWidth(3,100);
 }
 
 void MainWindow::on_btnAddTransakce_clicked()

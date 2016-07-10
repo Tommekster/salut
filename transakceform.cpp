@@ -115,7 +115,9 @@ TransakceForm::TransakceForm(sqlI *_db, QWidget *parent) :
     ui(new Ui::TransakceForm),addingNew(true),ownTransakce(false)
 {
     ui->setupUi(this);
-
+    setWindowTitle(tr("Add transaction"));
+    ui->buttonBox->setStandardButtons(QDialogButtonBox::Cancel);
+    ui->buttonBox->addButton(tr("Insert"),QDialogButtonBox::AcceptRole);
     fillForm();
 }
 
@@ -125,7 +127,8 @@ TransakceForm::TransakceForm(sqlI *_db, Transakce *t, QWidget *parent) :
     ui(new Ui::TransakceForm),addingNew(false),ownTransakce(true)
 {
     ui->setupUi(this);
-
+    setWindowTitle(tr("Edit transaction"));
+    ui->buttonBox->setStandardButtons(QDialogButtonBox::Cancel | QDialogButtonBox::Save);
     fillForm();
 }
 

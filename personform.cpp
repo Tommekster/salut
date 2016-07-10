@@ -21,6 +21,7 @@ void personForm::createForm()
     edtBirthDate->setCalendarPopup(true);
     lblAddress = new QLabel(tr("Address"));
     edtAddress = new QTextEdit(this);
+    edtAddress->setMinimumHeight(75);
     lblEmail = new QLabel(tr("Email"),this);
     edtEmail = new QLineEdit(this);
     lblPhone = new QLabel(tr("Phone"),this);
@@ -43,6 +44,7 @@ void personForm::createForm()
     lForm->addRow(lblEmail,edtEmail);
     lForm->addRow(lblPhone,edtPhone);
     lForm->addRow(lblBank,edtBank);
+    lForm->setFieldGrowthPolicy(lForm->ExpandingFieldsGrow);
 
     QVBoxLayout *lMain = new QVBoxLayout;
     lMain->addLayout(lForm);
