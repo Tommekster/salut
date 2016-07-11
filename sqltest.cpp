@@ -163,7 +163,7 @@ QAbstractItemModel *sqlTest::getEnergyModel(int i)
     QSqlQueryModel *model = new QSqlQueryModel(this);
     //QString Where("");
     QStringList l;
-    l << "rowid" << "Datum";
+    l << "rowid" << "strftime('%d.%m.%Y',Datum)";
     switch(i){
     case 0:
         l<< "WM0" << "WM1" << "WM2" << "WM3" << "WM4" << "WMS" ;
@@ -690,7 +690,7 @@ QAbstractItemModel *sqlTest::getAccountsModel()
 QAbstractItemModel *sqlTest::getTransakceModel(QString account)
 {
     QSqlQuery q(db);
-    q.prepare("select Transtion.rowid as TransID, Transtion.Datum as Datum, Finance.Notice as Notice, Finance.Amount as Amount from Finance "
+    q.prepare("select Transtion.rowid as TransID, strftime('%d.%m.%Y',Transtion.Datum) as Datum, Finance.Notice as Notice, Finance.Amount as Amount from Finance "
               "left join Transtion on Finance.transID=Transtion.rowid where Finance.Account==:account order by Transtion.Datum desc");
     q.bindValue(":account",account);
     q.exec();

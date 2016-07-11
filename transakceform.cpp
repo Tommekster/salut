@@ -77,11 +77,6 @@ void TransakceForm::removeRow()
 
 void TransakceForm::save()
 {
-    if(!checkAmount()){
-        QMessageBox::critical(this,tr("Špatně vyplněný formulář!"),tr("Neodpovídá součet transakce. Prosím, opravte hodnoty. "));
-        return;
-    }
-
     QList<Transakce::Rozpis> rozpis;
     int rows = ui->tableWidget->rowCount();
     for(int i=0; i<rows;i++){
@@ -168,7 +163,14 @@ void TransakceForm::on_btnRemove_clicked()
     checkAmount();
 }
 
-void TransakceForm::on_buttonBox_accepted()
+void TransakceForm::on_buttonBox_clicked(QAbstractButton *button)
 {
-    save();
+    if(ui->buttonBox->buttonRole(button) == QDialogButtonBox::AcceptRole){
+        if(!checkAmount()){
+            QMessageBox::critical(this,tr("Špatně vyplněný formulář!"),tr("Neodpovídá součet transakce. Prosím, opravte hodnoty. "));
+            return;
+        }
+        save();
+        accept();
+    }
 }

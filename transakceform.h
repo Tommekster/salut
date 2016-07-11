@@ -6,6 +6,7 @@
 
 class sqlI;
 class Transakce;
+class QAbstractButton;
 
 namespace Ui {
 class TransakceForm;
@@ -35,10 +36,8 @@ public:
 private slots:
     void on_btnAdd_clicked();
     bool checkAmount();
-
     void on_btnRemove_clicked();
-
-    void on_buttonBox_accepted();
+    void on_buttonBox_clicked(QAbstractButton *button);
 
 private:
     Ui::TransakceForm *ui;

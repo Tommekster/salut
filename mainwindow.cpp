@@ -282,5 +282,11 @@ void MainWindow::on_tablePayments_doubleClicked(const QModelIndex &index)
     Transakce *t=new Transakce(db,transID);
     TransakceForm f(db,t,this);
     int r=f.exec();
-    if(r==f.Accepted) loadFinance();
+    if(r==f.Accepted){
+        QModelIndex i = ui->tableAccounts->currentIndex();
+        loadFinance();
+        ui->tableAccounts->setCurrentIndex(i);
+        ui->tableAccounts->selectRow(i.row());
+        on_tableAccounts_clicked(i);
+    }
 }
