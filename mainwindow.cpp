@@ -53,6 +53,37 @@ void MainWindow::dbConnect()
     db->connect();
 }
 
+void MainWindow::fillCosts()
+{
+    int rows=ui->tableECosts->rowCount();
+    for(int r=0; r<rows; r++){
+        QDoubleSpinBox *spnPrice = new QDoubleSpinBox(this);
+        QTableWidgetItem *pri = ui->tableECosts->item(r,1);
+        QVariant v(pri->text());
+        spnPrice->setValue(v.toDouble());
+        pri->setText("");
+        spnPrice->setAlignment(Qt::AlignRight | Qt::AlignHCenter);
+        spnPrice->setMaximum(9999.999);
+        spnPrice->setDecimals(3);
+        spnPrice->setSuffix(tr(" Kč"));
+        ui->tableECosts->setCellWidget(r,1,spnPrice);
+
+        QComboBox *cmbTax = new QComboBox(this);
+        QList<int>::const_iterator i;
+        QList<int> taxes; taxes << 15 << 21;//=s->getTaxes();
+        for(i=taxes.constBegin(); i != taxes.constEnd(); ++i){
+            QVariant w(*i);
+            cmbTax->addItem(w.toString()+" %",w);
+        }
+        QTableWidgetItem *tax = ui->tableECosts->item(r,2);
+        cmbTax->setCurrentText(tax->text()+" %");
+        tax->setText("");
+        ui->tableECosts->setCellWidget(r,2,cmbTax);
+    }
+
+    ui->tableECosts->setColumnWidth(0,200);
+}
+
 int MainWindow::modelIndex2rowId(const QModelIndex &index)
 {
     const QAbstractItemModel *m = index.model();
@@ -74,6 +105,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->comboBox_2->addItem(tr("Electricity"));
 
     loadContracts();
+    fillCosts();
 
     connect(ui->pushButton_3,SIGNAL(clicked(bool)),this,SLOT(testFn()));
     connect(ui->checkBox,SIGNAL(stateChanged(int)),this,SLOT(loadContracts()));

@@ -27,6 +27,8 @@ settings::settings(QObject *parent) : QObject(parent), s("config.ini", QSettings
         qDebug()<<"configuration: SQLtest\n";
         _dbFile="database.sqlite";
     }
+
+    dphSazby << 15 << 21;
 }
 
 void settings::dbFileDialog(QWidget *w)

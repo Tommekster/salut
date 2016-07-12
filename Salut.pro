@@ -42,4 +42,5 @@ HEADERS  += mainwindow.h \
 
 FORMS    += mainwindow.ui \
     energyform.ui \
-    transakceform.ui
+    transakceform.ui \
+    tarifffom.ui

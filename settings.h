@@ -15,6 +15,7 @@ class settings : public QObject
     QSettings s;
     QString _dbFile;
     QString _dbType;
+    QList<int> dphSazby;
 
 public:
     explicit settings(QObject *parent = 0);
@@ -25,6 +26,8 @@ public:
     QString dbFile() const {return _dbFile;}
     void setDbType(QString _s) {_dbType=_s;s.setValue("database/type",_s);}
     QString dbType() const {return _dbType;}
+
+    QList<int> getTaxes()const{return dphSazby;}
 
 signals:
 

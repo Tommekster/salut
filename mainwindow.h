@@ -19,6 +19,8 @@ class MainWindow : public QMainWindow
     void loadConfiguration();
     void dbConnect();
 
+    void fillCosts();
+
     int modelIndex2rowId(const QModelIndex &);
 
 public:
